@@ -29,10 +29,24 @@ yarn # El equipo utilizo yarn pero es posible tambien utilizar 'npm install'
 yarn dev # npm run dev
 ```
 
-### Docker
+#### Docker
 
 ```bash
 yarn d:dev # Lanzar el contenedor de desarrollo mediante el script de npm
 
 docker-compose -f docker/docker-compose.yaml up # Lanzar el contenedor de desarrollo mediante docker-compose directo
+```
+
+#### Base de Datos
+
+Para correr las migraciones utilizar el siguiente comando:
+
+```bash
+npx prisma migrate dev
+```
+
+Para correr todas las migraciones desde cero:
+
+```bash
+npx prisma migrate reset
 ```
