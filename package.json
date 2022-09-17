@@ -13,7 +13,8 @@
     "build": "tsc",
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
-    "prepare": "if [[ $NODE_ENVIRONMENT != \"production\" ]]; then husky install; fi"
+    "prepare": "if [[ $NODE_ENVIRONMENT != \"production\" ]]; then husky install; fi",
+    "studio": "prisma studio"
   },
   "keywords": [],
   "author": "",
@@ -29,7 +30,8 @@
     "log4js": "^6.6.1",
     "mongoose": "^6.3.4",
     "morgan": "^1.10.0",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.1.13",
+    "zod": "^3.19.1"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.18.10",
