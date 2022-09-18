@@ -14,6 +14,7 @@ import IAuthService from 'serviceTypes/IAuthService';
 import { IEmailService } from 'serviceTypes/IEmailService';
 import InvitesController from 'controllers/InvitesController';
 import AuthController from 'controllers/AuthController';
+import { IFamilyService } from 'serviceTypes/IFamilyService';
 
 dotenv.config();
 
@@ -66,7 +67,8 @@ const usersController = new UsersController(usersService);
 const authService = myContainer.get<IAuthService>(SERVICE_SYMBOLS.IAuthService);
 const authController = new AuthController(authService);
 
-const invitesController = new InvitesController(usersService);
+const familyService = myContainer.get<IFamilyService>(SERVICE_SYMBOLS.IFamilyService);
+const invitesController = new InvitesController(usersService, authService, familyService);
 
 app.use('/api/v1', usersController.usersRouter);
 app.use('/api/v1', invitesController.invitesRouter);
