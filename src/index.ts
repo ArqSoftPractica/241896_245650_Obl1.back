@@ -10,6 +10,10 @@ import log4js from 'log4js';
 import VoteController from 'controllers/VoteController';
 import UsersController from 'controllers/UsersController';
 import { IUsersService } from 'serviceTypes/IUsersService';
+import IAuthService from 'serviceTypes/IAuthService';
+import { IEmailService } from 'serviceTypes/IEmailService';
+import InvitesController from 'controllers/InvitesController';
+import AuthController from 'controllers/AuthController';
 
 dotenv.config();
 
@@ -56,13 +60,17 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-// const voteService = myContainer.get<IVoteService>(SERVICE_SYMBOLS.IVoteService);
-// const voteController = new VoteController(voteService);
-
 const usersService = myContainer.get<IUsersService>(SERVICE_SYMBOLS.IUsersService);
 const usersController = new UsersController(usersService);
 
+const authService = myContainer.get<IAuthService>(SERVICE_SYMBOLS.IAuthService);
+const authController = new AuthController(authService);
+
+const invitesController = new InvitesController(usersService);
+
 app.use('/api/v1', usersController.usersRouter);
+app.use('/api/v1', invitesController.invitesRouter);
+app.use('/api/v1', authController.authRouter);
 
 // app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 //   console.error(err.stack);

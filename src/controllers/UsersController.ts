@@ -2,6 +2,7 @@ import express from 'express';
 import { Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
 import { validate } from 'middlewares/validate';
+import { LoginRequest } from 'models/requests/LoginRequest';
 import { RegisterAdminRequestSchema } from 'models/requests/RegisterAdminRequest';
 import 'reflect-metadata';
 import { IUsersService } from 'serviceTypes/IUsersService';
