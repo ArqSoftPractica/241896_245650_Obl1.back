@@ -4,6 +4,7 @@ import { injectable, inject } from 'inversify';
 import { validate } from 'middlewares/validate';
 import { RegisterAdminRequestSchema } from 'models/requests/RegisterAdminRequest';
 import 'reflect-metadata';
+import { IUsersService } from 'serviceTypes/IUsersService';
 import { SERVICE_SYMBOLS } from '../serviceTypes/serviceSymbols';
 
 @injectable()
@@ -11,11 +12,7 @@ class UsersController {
   public path = '/users';
   public usersRouter = express.Router();
 
-  // public constructor(@inject(SERVICE_SYMBOLS.IVoteService) private _voteService: IVoteService) {
-  //   this.initializeRoutes();
-  // }
-
-  public constructor() {
+  public constructor(@inject(SERVICE_SYMBOLS.IUsersService) private _usersService: IUsersService) {
     this.initializeRoutes();
   }
 
@@ -24,9 +21,13 @@ class UsersController {
   }
 
   public registerAdmin = async (req: Request, res: Response) => {
-    res.json({
-      message: 'Register success',
-    });
+    try {
+      const { body } = req;
+      await this._usersService.registerAdmin({ body });
+      res.status(201).send();
+    } catch (err) {
+      res.status(500).send(err);
+    }
   };
 }
 

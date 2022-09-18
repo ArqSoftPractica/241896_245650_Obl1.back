@@ -2,13 +2,14 @@ import * as dotenv from 'dotenv';
 import myContainer from './factory/inversify.config';
 import { SERVICE_SYMBOLS } from './serviceTypes/serviceSymbols';
 import { IVoteService } from './serviceTypes/IVoteService';
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import helmet from 'helmet';
 import log4js from 'log4js';
 import VoteController from 'controllers/VoteController';
 import UsersController from 'controllers/UsersController';
+import { IUsersService } from 'serviceTypes/IUsersService';
 
 dotenv.config();
 
@@ -58,9 +59,15 @@ app.use(express.json());
 // const voteService = myContainer.get<IVoteService>(SERVICE_SYMBOLS.IVoteService);
 // const voteController = new VoteController(voteService);
 
-const usersController = new UsersController();
+const usersService = myContainer.get<IUsersService>(SERVICE_SYMBOLS.IUsersService);
+const usersController = new UsersController(usersService);
 
 app.use('/api/v1', usersController.usersRouter);
+
+// app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+//   console.error(err.stack);
+//   res.status(500).send('Something broke!');
+// });
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}: http://localhost:${PORT}`);

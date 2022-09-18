@@ -20,8 +20,11 @@ export const RegisterAdminRequestSchema = z.object({
       })
       .email('Not a valid email'),
     password: z.string().min(8),
-    familyName: z.string().refine(familyNameIsUnique, {
+    name: z.string().min(1),
+    familyName: z.string().min(1).refine(familyNameIsUnique, {
       message: 'Family name is already taken',
     }),
   }),
 });
+
+export type RegisterAdminRequest = z.infer<typeof RegisterAdminRequestSchema>;
