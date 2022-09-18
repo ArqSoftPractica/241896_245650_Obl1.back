@@ -27,7 +27,7 @@ export default class AuthService implements IAuthService {
 
     const user = await this.usersRepository.getUserByEmail(email);
 
-    if (!user) throw new Error('User not found');
+    if (!user) throw new InvalidDataError('User not found');
 
     this.verifyPassword(password, user);
 
@@ -39,9 +39,6 @@ export default class AuthService implements IAuthService {
   private verifyPassword(password: string, user: User) {
     const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
     const isPasswordCorrect = user.password === hashedPassword;
-
-    console.log(hashedPassword, '\nvs.\n', user.password);
-    console.warn('isPasswordCorrect', isPasswordCorrect);
 
     if (!isPasswordCorrect) throw new InvalidDataError('Password is incorrect');
   }
@@ -72,10 +69,12 @@ export default class AuthService implements IAuthService {
     return decrypted.toString();
   }
 
-  private verifyInviteToken(token: string): InvitePayload {
+  public async verifyInviteToken(token: string): Promise<InvitePayload> {
     if (!this.secret) throw new Error('JWT_SECRET not set');
 
-    const decodedToken = jwt.verify(token, this.secret) as InvitePayload;
+    const decryptedToken = await this.decryptTokenWithCrypto(token);
+
+    const decodedToken = jwt.verify(decryptedToken, this.secret) as InvitePayload;
 
     return decodedToken;
   }

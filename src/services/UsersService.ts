@@ -10,6 +10,7 @@ import { User } from '@prisma/client';
 import { SERVICE_SYMBOLS } from 'serviceTypes/serviceSymbols';
 import IAuthService from 'serviceTypes/IAuthService';
 import { IEmailService } from 'serviceTypes/IEmailService';
+import { RegisterRequest } from 'models/requests/RegisterRequest';
 
 @injectable()
 class UsersService implements IUsersService {
@@ -18,6 +19,26 @@ class UsersService implements IUsersService {
     @inject(SERVICE_SYMBOLS.IAuthService) private authService: IAuthService,
     @inject(SERVICE_SYMBOLS.IEmailService) private emailService: IEmailService,
   ) {}
+
+  public async registerUser(requestData: RegisterRequest): Promise<void> {
+    const { body } = requestData;
+    const { email, password, name, invitationToken } = body;
+
+    const inviteToken = await this.authService.verifyInviteToken(invitationToken);
+    const { role, familyId } = inviteToken;
+
+    const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
+
+    await this.usersRepository.createUser({
+      email,
+      name,
+      password: hashedPassword,
+      family: {
+        connect: { id: familyId },
+      },
+      role,
+    });
+  }
 
   public async inviteUser(requestData: InviteUserRequest, user: User): Promise<void> {
     const { body } = requestData;
