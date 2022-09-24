@@ -23,6 +23,7 @@ class AuthController {
   public initializeRoutes() {
     this.authRouter.post(this.path + '/login', validate(LoginRequestSchema), this.login);
     this.authRouter.put(this.path + '/api-key', requireScopedAuth('admin'), this.refreshApiKey);
+    this.authRouter.get(this.path + '/api-key', requireScopedAuth('admin', 'user'), this.getApiKey);
   }
 
   public login = async (req: Request, res: Response) => {
@@ -55,6 +56,20 @@ class AuthController {
       res.status(500).send(err);
     }
   };
+
+  public getApiKey = async (req: Request, res: Response) => {
+    try {
+      const { user } = req as Request & { user: User };
+      const { familyId } = user;
+      const apiKey = await this._authService.getApiKey(familyId);
+      res.status(200).json({
+        apiKey,
+        message: 'Get successful',
+      });
+    } catch (err) {
+      res.status(500).send(err);
+    }
+  }
 }
 
 export default AuthController;

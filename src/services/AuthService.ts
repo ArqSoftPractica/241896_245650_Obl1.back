@@ -23,7 +23,13 @@ export default class AuthService implements IAuthService {
   public constructor(
     @inject(REPOSITORY_SYMBOLS.IUsersRepository) private usersRepository: IUsersRepository,
     @inject(REPOSITORY_SYMBOLS.IFamilyRepository) private familyRepository: IFamilyRepository,
-  ) {}
+  ) { }
+
+  public async getApiKey(familyId: number): Promise<string> {
+    const family = await this.familyRepository.findById(familyId);
+
+    return family.apiKey;
+  }
 
   public async refreshApiKey(familyId: number): Promise<string> {
     const newApiKey = await this.generateApiKey();

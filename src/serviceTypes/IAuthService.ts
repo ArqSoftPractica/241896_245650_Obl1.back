@@ -9,4 +9,5 @@ export default interface IAuthService {
   verifyInviteToken(token: string): Promise<InvitePayload>;
   login(requestData: LoginRequest): Promise<string>;
   refreshApiKey(familyId: number): Promise<string>;
+  getApiKey(familyId: number): Promise<string>;
 }
