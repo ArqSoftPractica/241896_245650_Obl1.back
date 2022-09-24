@@ -8,4 +8,6 @@ export default interface IAuthService {
   createInviteToken(user: User, email: string, role: Role): Promise<string>;
   verifyInviteToken(token: string): Promise<InvitePayload>;
   login(requestData: LoginRequest): Promise<string>;
+  refreshApiKey(familyId: number): Promise<string>;
+  getApiKey(familyId: number): Promise<string>;
 }
