@@ -2,10 +2,14 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient({});
 
+const CATEGORY_MODEL_NAME = 'Category';
+const EXPENSE_MODEL_NAME = 'Expense';
 // Middlewares for soft delete
 
 prisma.$use(async (params, next) => {
-  if (params.model == 'Category') {
+  const isModelWithSoftDelete = [CATEGORY_MODEL_NAME, EXPENSE_MODEL_NAME].includes(params.model ?? '');
+
+  if (isModelWithSoftDelete) {
     if (params.action === 'findUnique' || params.action === 'findFirst') {
       // Change to findFirst - you cannot filter
       // by anything except ID / unique with findUnique
@@ -30,7 +34,9 @@ prisma.$use(async (params, next) => {
 });
 
 prisma.$use(async (params, next) => {
-  if (params.model == 'Category') {
+  const isModelWithSoftDelete = [CATEGORY_MODEL_NAME, EXPENSE_MODEL_NAME].includes(params.model ?? '');
+
+  if (isModelWithSoftDelete) {
     if (params.action == 'update') {
       // Change to updateMany - you cannot filter
       // by anything except ID / unique with findUnique
@@ -51,8 +57,10 @@ prisma.$use(async (params, next) => {
 });
 
 prisma.$use(async (params, next) => {
-  // Check incoming query type
-  if (params.model == 'Category') {
+  // Check incoming query type  
+  const isModelWithSoftDelete = [CATEGORY_MODEL_NAME, EXPENSE_MODEL_NAME].includes(params.model ?? '');
+
+  if (isModelWithSoftDelete) {
     if (params.action == 'delete') {
       // Delete queries
       // Change action to an update

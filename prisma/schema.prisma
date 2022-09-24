@@ -9,25 +9,26 @@ datasource db {
 }
 
 model Family {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  apiKey    String   @unique @default(cuid())
-  members   User[]
+  id         Int        @id @default(autoincrement())
+  name       String     @unique
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  apiKey     String     @unique @default(cuid())
+  members    User[]
   categories Category[]
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   name      String
   password  String
-  email     String   @unique
-  role      Role     @default(user)
-  family    Family   @relation(fields: [familyId], references: [id])
+  email     String    @unique
+  role      Role      @default(user)
+  family    Family    @relation(fields: [familyId], references: [id])
   familyId  Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  expenses  Expense[]
 }
 
 enum Role {
@@ -46,4 +47,18 @@ model Category {
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
   deleted              DateTime?
+  expenses             Expense[]
+}
+
+model Expense {
+  id         Int       @id @default(autoincrement())
+  amount     Decimal
+  date       DateTime
+  category   Category  @relation(fields: [categoryId], references: [id])
+  categoryId Int
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deleted    DateTime?
+  user       User      @relation(fields: [userId], references: [id])
+  userId     Int
 }
