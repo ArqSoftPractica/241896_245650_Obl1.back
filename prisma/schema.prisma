@@ -1,28 +1,26 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model Family {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  members   User[]
+  id         Int        @id @default(autoincrement())
+  name       String     @unique
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  members    User[]
+  categories Category[]
 }
 
 model User {
   id        Int      @id @default(autoincrement())
   name      String
-  password  String   
+  password  String
   email     String   @unique
   role      Role     @default(user)
   family    Family   @relation(fields: [familyId], references: [id])
@@ -34,4 +32,17 @@ model User {
 enum Role {
   admin
   user
+}
+
+model Category {
+  id                   Int       @id @default(autoincrement())
+  name                 String
+  description          String
+  imageURL             String
+  monthlySpendingLimit Int       @default(0)
+  family               Family    @relation(fields: [familyId], references: [id])
+  familyId             Int
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  deleted              DateTime?
 }
