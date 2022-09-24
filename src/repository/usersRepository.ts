@@ -6,6 +6,13 @@ import { IUsersRepository } from 'repositoryTypes/IUsersRepository';
 
 @injectable()
 class UsersRepository implements IUsersRepository {
+  public async getUserByEmail(email: string): Promise<User | null> {
+    return client.user.findUnique({
+      where: {
+        email,
+      },
+    });
+  }
   public async createUser(userData: Prisma.UserCreateInput): Promise<User> {
     return await client.user.create({ data: userData });
   }

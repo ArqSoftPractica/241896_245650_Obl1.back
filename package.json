@@ -21,6 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "4.3.1",
+    "aws-sdk": "^2.1218.0",
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
