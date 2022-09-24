@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 import { Role, User } from '@prisma/client';
 import IAuthService from 'serviceTypes/IAuthService';
 import { Optional } from 'helpers/Optional';
@@ -10,6 +10,7 @@ import { LoginRequest } from 'models/requests/LoginRequest';
 import { REPOSITORY_SYMBOLS } from 'repositoryTypes/repositorySymbols';
 import { IUsersRepository } from 'repositoryTypes/IUsersRepository';
 import { InvalidDataError } from 'errors/InvalidDataError';
+import { IFamilyRepository } from 'repositoryTypes/IFamilyRepository';
 
 interface IDecodedToken {
   user: User;
@@ -19,7 +20,32 @@ interface IDecodedToken {
 export default class AuthService implements IAuthService {
   private secret = process.env.JWT_SECRET;
 
-  public constructor(@inject(REPOSITORY_SYMBOLS.IUsersRepository) private usersRepository: IUsersRepository) {}
+  public constructor(
+    @inject(REPOSITORY_SYMBOLS.IUsersRepository) private usersRepository: IUsersRepository,
+    @inject(REPOSITORY_SYMBOLS.IFamilyRepository) private familyRepository: IFamilyRepository,
+  ) { }
+
+  public async getApiKey(familyId: number): Promise<string> {
+    const family = await this.familyRepository.findById(familyId);
+
+    return family.apiKey;
+  }
+
+  public async refreshApiKey(familyId: number): Promise<string> {
+    const newApiKey = await this.generateApiKey();
+
+    await this.familyRepository.updateFamily(familyId, {
+      apiKey: newApiKey,
+    });
+
+    return newApiKey;
+  }
+
+  private async generateApiKey(): Promise<string> {
+    const apiKey = uuidv4();
+
+    return `family-costs-${apiKey}`;
+  }
 
   public async login(requestData: LoginRequest): Promise<string> {
     const { body } = requestData;

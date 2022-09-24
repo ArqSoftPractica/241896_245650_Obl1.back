@@ -1,11 +1,14 @@
 import client from 'models/client';
-import { Family } from '@prisma/client';
+import { Family, Prisma } from '@prisma/client';
 import { injectable } from 'inversify';
 import 'reflect-metadata';
 import { IFamilyRepository } from 'repositoryTypes/IFamilyRepository';
 
 @injectable()
 class FamilyRepository implements IFamilyRepository {
+  public async updateFamily(familyId: number, newValues: Prisma.FamilyUpdateInput): Promise<Family> {
+    return await client.family.update({ where: { id: familyId }, data: newValues });
+  }
   public async findById(familyId: number): Promise<Family> {
     return await client.family.findUniqueOrThrow({ where: { id: familyId } });
   }
