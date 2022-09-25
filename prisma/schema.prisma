@@ -13,6 +13,7 @@ model Family {
   name       String     @unique
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
+  apiKey     String     @unique @default(cuid())
   members    User[]
   categories Category[]
 }
