@@ -45,6 +45,8 @@ prisma.$use(async (params, next) => {
 
   if (isModelWithSoftDelete) {
     if (params.action == 'update') {
+      console.info(`Update query on ${params.model}:`);
+      console.info(JSON.stringify(params.args, null, 2));
       // Change to updateMany - you cannot filter
       // by anything except ID / unique with findUnique
       params.action = 'updateMany';
@@ -53,6 +55,8 @@ prisma.$use(async (params, next) => {
       params.args.where['deleted'] = null;
     }
     if (params.action == 'updateMany') {
+      console.info(`Update query on ${params.model}:`);
+      console.info(JSON.stringify(params.args, null, 2));
       if (params.args.where != undefined) {
         params.args.where['deleted'] = null;
       } else {
@@ -68,12 +72,16 @@ prisma.$use(async (params, next) => {
   const isModelWithSoftDelete = [CATEGORY_MODEL_NAME, EXPENSE_MODEL_NAME].includes(params.model ?? '');
   if (isModelWithSoftDelete) {
     if (params.action == 'delete') {
+      console.info(`Delete query on ${params.model}:`);
+      console.info(JSON.stringify(params.args, null, 2));
       // Delete queries
       // Change action to an update
       params.action = 'update';
       params.args['data'] = { deleted: new Date() };
     }
     if (params.action == 'deleteMany') {
+      console.info(`Delete query on ${params.model}:`);
+      console.info(JSON.stringify(params.args, null, 2));
       // Delete many queries
       params.action = 'updateMany';
       if (params.args.data != undefined) {
@@ -81,6 +89,18 @@ prisma.$use(async (params, next) => {
       } else {
         params.args['data'] = { deleted: new Date() };
       }
+    }
+  }
+  return next(params);
+});
+
+// Log create queries
+prisma.$use(async (params, next) => {
+  const isModelWithSoftDelete = [CATEGORY_MODEL_NAME, EXPENSE_MODEL_NAME].includes(params.model ?? '');
+  if (isModelWithSoftDelete) {
+    if (params.action == 'create' || params.action == 'createMany') {
+      console.info(`Create query on ${params.model}:`);
+      console.info(JSON.stringify(params.args, null, 2));
     }
   }
   return next(params);

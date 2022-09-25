@@ -19,16 +19,15 @@ import ExpensesController from 'controllers/ExpensesController';
 
 dotenv.config();
 
-const logFile = process.env.LOG_FILE_PATH ?? `${__dirname}/log.txt`;
-
 log4js.configure({
-  appenders: { everything: { type: 'file', filename: logFile } },
-  categories: { default: { appenders: ['everything'], level: 'all' } },
+  appenders: { out: { type: 'stdout' } },
+  categories: { default: { appenders: ['out'], level: 'all' } },
 });
 
-const logger = log4js.getLogger('everything');
+const logger = log4js.getLogger('out');
 
 console.log = (...args) => logger.info(...args);
+console.info = (...args) => logger.info(...args);
 console.error = (...args) => logger.error(...args);
 console.warn = (...args) => logger.warn(...args);
 
@@ -38,7 +37,7 @@ const app = express();
 
 app.use(
   morgan('tiny', {
-    skip: (req, res) => res.statusCode > 400,
+    skip: (req, res) => res.statusCode >= 400,
     stream: {
       write: (msg: string) => {
         logger.info(msg);
