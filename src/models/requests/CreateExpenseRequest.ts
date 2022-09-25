@@ -16,7 +16,6 @@ export const CreateExpenseRequestSchema = z.object({
   body: z.object({
     amount: z.number().min(0),
     date: z.preprocess((arg) => {
-      console.log('arg', arg);
       if (typeof arg == 'string' || arg instanceof Date) return new Date(arg);
     }, z.date()),
     categoryId: z.number().min(1),

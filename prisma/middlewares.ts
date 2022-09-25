@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient({});
+import prisma from '../src/models/client';
 
 const CATEGORY_MODEL_NAME = 'Category';
 const EXPENSE_MODEL_NAME = 'Expense';
@@ -57,9 +55,9 @@ prisma.$use(async (params, next) => {
 });
 
 prisma.$use(async (params, next) => {
-  // Check incoming query type  
+  // Check incoming query type
   const isModelWithSoftDelete = [CATEGORY_MODEL_NAME, EXPENSE_MODEL_NAME].includes(params.model ?? '');
-
+  console.log(params);
   if (isModelWithSoftDelete) {
     if (params.action == 'delete') {
       // Delete queries

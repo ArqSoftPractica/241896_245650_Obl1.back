@@ -1,10 +1,14 @@
 import { User } from '@prisma/client';
+import { ResourceNotFoundError } from 'errors/ResourceNotFoundError';
 import express from 'express';
 import { Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
 import { requireScopedAuth } from 'middlewares/requiresAuth';
 import { validate } from 'middlewares/validate';
 import { CreateExpenseRequestSchema } from 'models/requests/CreateExpenseRequest';
+import { DeleteExpenseRequestSchema } from 'models/requests/DeleteExpenseRequest';
+import { GetExpenseRequestSchema } from 'models/requests/GetExpenseRequest';
+import { UpdateExpenseRequestSchema } from 'models/requests/UpdateExpenseRequest';
 import 'reflect-metadata';
 import { IExpensesService } from 'serviceTypes/IExpensesService';
 import { SERVICE_SYMBOLS } from '../serviceTypes/serviceSymbols';
@@ -25,8 +29,29 @@ class ExpensesController {
       validate(CreateExpenseRequestSchema),
       this.createExpense,
     );
+
+    this.expensesRouter.get(
+      `${this.path}/:expenseId`,
+      requireScopedAuth('admin', 'user'),
+      validate(GetExpenseRequestSchema),
+      this.getExpense,
+    );
+    this.expensesRouter.put(
+      `${this.path}/:expenseId`,
+      requireScopedAuth('admin'),
+      validate(UpdateExpenseRequestSchema),
+      this.updateExpense,
+    );
+    this.expensesRouter.delete(
+      `${this.path}/:expenseId`,
+      requireScopedAuth('admin'),
+      validate(DeleteExpenseRequestSchema),
+      this.deleteExpense,
+    );
+    this.expensesRouter.get(this.path, requireScopedAuth('admin', 'user'), this.getExpenses);
   }
 
+  // TODO: Category has to be in family
   public createExpense = async (req: Request, res: Response) => {
     try {
       const { body, user } = req as Request & { user: User };
@@ -43,7 +68,93 @@ class ExpensesController {
       });
     } catch (err) {
       console.error(err);
-      res.status(500).send(err);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
+  public updateExpense = async (req: Request, res: Response) => {
+    try {
+      const { body, params } = req as Request & { params: { expenseId: string } };
+
+      const expenseId = parseInt(params.expenseId);
+      const expense = await this._expensesService.updateExpense({
+        body,
+        params: {
+          expenseId,
+        },
+      });
+
+      res.status(200).json({
+        message: 'Expense updated successfully',
+        expense: {
+          id: expense.id,
+          amount: expense.amount,
+          date: expense.date,
+        },
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
+  public deleteExpense = async (req: Request, res: Response) => {
+    try {
+      const { params } = req as Request & { params: { expenseId: string } };
+
+      const expenseId = parseInt(params.expenseId);
+      const expense = await this._expensesService.deleteExpense(expenseId);
+
+      res.status(200).json({
+        message: 'Expense deleted successfully',
+        expense: {
+          id: expense.id,
+          amount: expense.amount,
+          date: expense.date,
+        },
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
+  public getExpenses = async (req: Request, res: Response) => {
+    try {
+      const { user } = req as Request & { user: User };
+
+      const expenses = await this._expensesService.getExpenses(user);
+
+      res.status(200).json({
+        message: 'Expenses fetched successfully',
+        expenses,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
+  public getExpense = async (req: Request, res: Response) => {
+    try {
+      const { params } = req as Request & { params: { expenseId: string } };
+
+      const expenseId = parseInt(params.expenseId);
+      const expense = await this._expensesService.getExpense(expenseId);
+
+      res.status(200).json({
+        message: 'Expense fetched successfully',
+        expense,
+      });
+    } catch (err) {
+      console.error(err);
+
+      if (err instanceof ResourceNotFoundError) {
+        res.status(404).json({ message: err.message });
+        return;
+      }
+
+      res.status(500).json({ message: 'Internal server error' });
     }
   };
 }
