@@ -3,6 +3,7 @@ const SERVICE_SYMBOLS = {
   IAuthService: Symbol.for('IAuthService'),
   IEmailService: Symbol.for('IEmailService'),
   IFamilyService: Symbol.for('IFamilyService'),
+  IExpensesService: Symbol.for('IExpensesService'),
   ICategoriesService: Symbol.for('ICategoriesService'),
 };
 

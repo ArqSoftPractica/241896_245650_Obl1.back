@@ -14,6 +14,8 @@ import AuthController from 'controllers/AuthController';
 import { IFamilyService } from 'serviceTypes/IFamilyService';
 import { ICategoriesService } from 'serviceTypes/ICategoriesService';
 import CategoryController from 'controllers/CategoryController';
+import { IExpensesService } from 'serviceTypes/IExpensesService';
+import ExpensesController from 'controllers/ExpensesController';
 
 dotenv.config();
 
@@ -69,12 +71,16 @@ const authController = new AuthController(authService);
 const familyService = myContainer.get<IFamilyService>(SERVICE_SYMBOLS.IFamilyService);
 const invitesController = new InvitesController(usersService, authService, familyService);
 
+const expensesService = myContainer.get<IExpensesService>(SERVICE_SYMBOLS.IExpensesService);
+const expensesController = new ExpensesController(expensesService);
+
 const categoriesService = myContainer.get<ICategoriesService>(SERVICE_SYMBOLS.ICategoriesService);
 const categoriesController = new CategoryController(categoriesService);
 
 app.use('/api/v1', usersController.usersRouter);
 app.use('/api/v1', invitesController.invitesRouter);
 app.use('/api/v1', authController.authRouter);
+app.use('/api/v1', expensesController.expensesRouter);
 app.use('/api/v1', categoriesController.categoriesRouter);
 
 // app.use((err: any, req: Request, res: Response, next: NextFunction) => {
