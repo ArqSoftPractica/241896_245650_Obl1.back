@@ -1,17 +1,14 @@
 import * as dotenv from 'dotenv';
 import myContainer from './factory/inversify.config';
 import { SERVICE_SYMBOLS } from './serviceTypes/serviceSymbols';
-import { IVoteService } from './serviceTypes/IVoteService';
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import helmet from 'helmet';
 import log4js from 'log4js';
-import VoteController from 'controllers/VoteController';
 import UsersController from 'controllers/UsersController';
 import { IUsersService } from 'serviceTypes/IUsersService';
 import IAuthService from 'serviceTypes/IAuthService';
-import { IEmailService } from 'serviceTypes/IEmailService';
 import InvitesController from 'controllers/InvitesController';
 import AuthController from 'controllers/AuthController';
 import { IFamilyService } from 'serviceTypes/IFamilyService';

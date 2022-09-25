@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import client from 'models/client';
 
 import myContainer from 'factory/inversify.config';
 import { REPOSITORY_SYMBOLS } from 'repositoryTypes/repositorySymbols';
