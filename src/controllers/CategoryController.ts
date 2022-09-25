@@ -12,14 +12,19 @@ import { SERVICE_SYMBOLS } from '../serviceTypes/serviceSymbols';
 @injectable()
 class CategoryController {
   public path = '/categories';
-  public usersRouter = express.Router();
+  public categoriesRouter = express.Router();
 
   public constructor(@inject(SERVICE_SYMBOLS.ICategoriesService) private _categoriesService: ICategoriesService) {
     this.initializeRoutes();
   }
 
   public initializeRoutes() {
-    this.usersRouter.post(this.path, requireScopedAuth('admin'), validate(AddCategoryRequestSchema), this.addCategory);
+    this.categoriesRouter.post(
+      this.path,
+      requireScopedAuth('admin'),
+      validate(AddCategoryRequestSchema),
+      this.addCategory,
+    );
   }
 
   public addCategory = async (req: Request, res: Response) => {
