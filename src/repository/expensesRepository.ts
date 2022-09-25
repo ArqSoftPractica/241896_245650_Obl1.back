@@ -15,11 +15,25 @@ class ExpensesRepository implements IExpensesRepository {
   }
 
   public async findById(id: number): Promise<Expense | null> {
-    return await client.expense.findUnique({ where: { id } });
+    return await client.expense.findFirst({ where: { id } });
   }
 
   public async deleteExpense(expenseId: number): Promise<Expense> {
     return await client.expense.delete({ where: { id: expenseId } });
+  }
+
+  public async isExpenseInFamily(expenseId: number, familyId: number): Promise<boolean> {
+    const expense = await client.expense.findFirst({
+      where: {
+        id: expenseId,
+        category: {
+          family: {
+            id: familyId,
+          },
+        },
+      },
+    });
+    return !!expense;
   }
 }
 

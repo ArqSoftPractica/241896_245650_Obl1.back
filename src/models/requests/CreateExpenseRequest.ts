@@ -1,16 +1,5 @@
 import { z } from 'zod';
 
-import myContainer from 'factory/inversify.config';
-import { REPOSITORY_SYMBOLS } from 'repositoryTypes/repositorySymbols';
-import { IFamilyRepository } from 'repositoryTypes/IFamilyRepository';
-
-// TODO: CHECK CATEGORY EXISTS
-const familyRepository = myContainer.get<IFamilyRepository>(REPOSITORY_SYMBOLS.IFamilyRepository);
-
-const familyNameIsUnique = async (familyName: string) => {
-  const family = await familyRepository.findByFamilyName(familyName);
-  return !family;
-};
 
 export const CreateExpenseRequestSchema = z.object({
   body: z.object({

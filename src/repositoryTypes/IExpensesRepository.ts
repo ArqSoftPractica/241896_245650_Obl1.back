@@ -5,4 +5,5 @@ export interface IExpensesRepository {
   updateExpense(expenseId: number, newValues: Prisma.ExpenseUpdateInput): Promise<Expense>;
   deleteExpense(expenseId: number): Promise<Expense>;
   findById(id: number): Promise<Expense | null>;
+  isExpenseInFamily(expenseId: number, familyId: number): Promise<boolean>;
 }

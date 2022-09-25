@@ -51,7 +51,6 @@ class ExpensesController {
     this.expensesRouter.get(this.path, requireScopedAuth('admin', 'user'), this.getExpenses);
   }
 
-  // TODO: Category has to be in family
   public createExpense = async (req: Request, res: Response) => {
     try {
       const { body, user } = req as Request & { user: User };
@@ -68,21 +67,28 @@ class ExpensesController {
       });
     } catch (err) {
       console.error(err);
+      if (err instanceof ResourceNotFoundError) {
+        res.status(404).json({ message: err.message });
+        return;
+      }
       res.status(500).json({ message: 'Internal server error' });
     }
   };
 
   public updateExpense = async (req: Request, res: Response) => {
     try {
-      const { body, params } = req as Request & { params: { expenseId: string } };
+      const { body, params, user } = req as Request & { user: User; params: { expenseId: string } };
 
       const expenseId = parseInt(params.expenseId);
-      const expense = await this._expensesService.updateExpense({
-        body,
-        params: {
-          expenseId,
+      const expense = await this._expensesService.updateExpense(
+        {
+          body,
+          params: {
+            expenseId,
+          },
         },
-      });
+        user,
+      );
 
       res.status(200).json({
         message: 'Expense updated successfully',
@@ -94,16 +100,20 @@ class ExpensesController {
       });
     } catch (err) {
       console.error(err);
+      if (err instanceof ResourceNotFoundError) {
+        res.status(404).json({ message: err.message });
+        return;
+      }
       res.status(500).json({ message: 'Internal server error' });
     }
   };
 
   public deleteExpense = async (req: Request, res: Response) => {
     try {
-      const { params } = req as Request & { params: { expenseId: string } };
+      const { params, user } = req as Request & { user: User; params: { expenseId: string } };
 
       const expenseId = parseInt(params.expenseId);
-      const expense = await this._expensesService.deleteExpense(expenseId);
+      const expense = await this._expensesService.deleteExpense(expenseId, user);
 
       res.status(200).json({
         message: 'Expense deleted successfully',
@@ -115,6 +125,10 @@ class ExpensesController {
       });
     } catch (err) {
       console.error(err);
+      if (err instanceof ResourceNotFoundError) {
+        res.status(404).json({ message: err.message });
+        return;
+      }
       res.status(500).json({ message: 'Internal server error' });
     }
   };
@@ -131,16 +145,20 @@ class ExpensesController {
       });
     } catch (err) {
       console.error(err);
+      if (err instanceof ResourceNotFoundError) {
+        res.status(404).json({ message: err.message });
+        return;
+      }
       res.status(500).json({ message: 'Internal server error' });
     }
   };
 
   public getExpense = async (req: Request, res: Response) => {
     try {
-      const { params } = req as Request & { params: { expenseId: string } };
+      const { params, user } = req as Request & { user: User; params: { expenseId: string } };
 
       const expenseId = parseInt(params.expenseId);
-      const expense = await this._expensesService.getExpense(expenseId);
+      const expense = await this._expensesService.getExpense(expenseId, user);
 
       res.status(200).json({
         message: 'Expense fetched successfully',
