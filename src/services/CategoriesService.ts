@@ -9,7 +9,9 @@ import { InvalidDataError } from 'errors/InvalidDataError';
 
 @injectable()
 class CategoriesService implements ICategoriesService {
-  public constructor(@inject(REPOSITORY_SYMBOLS.IFamilyRepository) private categoriesService: ICategoryRepository) {}
+  public constructor(
+    @inject(REPOSITORY_SYMBOLS.ICategoriesRepository) private categoriesRepository: ICategoryRepository,
+  ) {}
 
   public async addCategory(req: AuthRequest): Promise<Category> {
     const { body } = req;
@@ -26,12 +28,12 @@ class CategoriesService implements ICategoriesService {
       },
     };
 
-    const categoryAdded = await this.categoriesService.createCategory(category);
+    const categoryAdded = await this.categoriesRepository.createCategory(category);
     return categoryAdded;
   }
 
   public async checkIfCategoryExistsInFamily(categoryName: string, familyId: number): Promise<void> {
-    const categoryExists = await this.categoriesService.categoryExistsInFamily(categoryName, familyId);
+    const categoryExists = await this.categoriesRepository.categoryExistsInFamily(categoryName, familyId);
     if (categoryExists) {
       throw new InvalidDataError('Category already exists in family');
     }
