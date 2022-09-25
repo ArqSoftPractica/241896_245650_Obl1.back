@@ -3,11 +3,19 @@ import { Expense, Prisma } from '@prisma/client';
 import { injectable } from 'inversify';
 import 'reflect-metadata';
 import { IExpensesRepository } from 'repositoryTypes/IExpensesRepository';
+import { ExpenseDTO } from 'models/responses/ExpenseDTO';
 
 @injectable()
 class ExpensesRepository implements IExpensesRepository {
-  public async createExpense(expenseData: Prisma.ExpenseCreateInput): Promise<Expense> {
-    return await client.expense.create({ data: expenseData });
+  public async createExpense(expenseData: Prisma.ExpenseCreateInput): Promise<ExpenseDTO> {
+    return await client.expense.create({
+      data: expenseData,
+      select: {
+        id: true,
+        amount: true,
+        date: true,
+      },
+    });
   }
 
   public async updateExpense(expenseId: number, newValues: Prisma.ExpenseUpdateInput): Promise<Expense> {

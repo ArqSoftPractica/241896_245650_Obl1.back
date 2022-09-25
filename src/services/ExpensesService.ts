@@ -8,6 +8,7 @@ import { IExpensesRepository } from 'repositoryTypes/IExpensesRepository';
 import { UpdateExpenseRequest } from 'models/requests/UpdateExpenseRequest';
 import { ResourceNotFoundError } from 'errors/ResourceNotFoundError';
 import { ICategoryRepository } from 'repositoryTypes/ICategoriesRepository';
+import { ExpenseDTO } from 'models/responses/ExpenseDTO';
 
 @injectable()
 class ExpensesService implements IExpensesService {
@@ -19,9 +20,7 @@ class ExpensesService implements IExpensesService {
   private async checkCategoryIsInFamily(categoryId: number, familyId: number): Promise<boolean> {
     const category = await this.categoriesRepository.findById(categoryId);
 
-    console.log(category, familyId);
     const isNotCategoryInFamily = !category || category.familyId !== familyId;
-    console.log(isNotCategoryInFamily);
     if (isNotCategoryInFamily) throw new ResourceNotFoundError('Category not found');
 
     return true;
@@ -35,7 +34,7 @@ class ExpensesService implements IExpensesService {
     return true;
   }
 
-  public async createExpense(requestData: CreateExpenseRequest, user: User): Promise<Expense> {
+  public async createExpense(requestData: CreateExpenseRequest, user: User): Promise<ExpenseDTO> {
     const { body } = requestData;
     const { amount, date, categoryId } = body;
 

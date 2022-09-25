@@ -59,11 +59,7 @@ class ExpensesController {
 
       res.status(201).json({
         message: 'Expense created successfully',
-        expense: {
-          id: expense.id,
-          amount: expense.amount,
-          date: expense.date,
-        },
+        expense,
       });
     } catch (err) {
       console.error(err);
