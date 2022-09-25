@@ -45,6 +45,7 @@ class CategoryController {
     } catch (err) {
       if (err instanceof InvalidDataError) {
         res.status(err.code).json({ message: err.message });
+        return;
       }
       res.status(500).json({ message: 'Internal Server Error' });
     }
@@ -57,9 +58,9 @@ class CategoryController {
     } catch (err) {
       if (err instanceof ResourceNotFoundError) {
         res.status(err.code).json({ message: err.message });
-      } else {
-        res.status(500).json({ message: 'Internal Server Error' });
+        return;
       }
+      res.status(500).json({ message: 'Internal Server Error' });
     }
   };
 }
