@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import client from 'models/client';
 
 import myContainer from 'factory/inversify.config';
 import { REPOSITORY_SYMBOLS } from 'repositoryTypes/repositorySymbols';
@@ -18,7 +17,7 @@ export const CreateExpenseRequestSchema = z.object({
     amount: z.number().min(0),
     date: z.preprocess((arg) => {
       console.log('arg', arg);
-      if (typeof arg == "string" || arg instanceof Date) return new Date(arg);
+      if (typeof arg == 'string' || arg instanceof Date) return new Date(arg);
     }, z.date()),
     categoryId: z.number().min(1),
   }),

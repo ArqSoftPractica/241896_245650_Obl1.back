@@ -64,7 +64,7 @@
     "**/*.{js,jsx,ts,tsx,json,css}": [
       "prettier --write",
       "eslint --fix src/",
-      "git add"
+      "git add ."
     ],
     "*.js": "eslint --cache --fix"
   }
