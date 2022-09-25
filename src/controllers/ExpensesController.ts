@@ -5,14 +5,8 @@ import { injectable, inject } from 'inversify';
 import { requireScopedAuth } from 'middlewares/requiresAuth';
 import { validate } from 'middlewares/validate';
 import { CreateExpenseRequestSchema } from 'models/requests/CreateExpenseRequest';
-import { GetInviteRequestSchema } from 'models/requests/GetInviteRequest';
-import { InviteUserRequestSchema } from 'models/requests/InviteUserRequest';
-import { RegisterRequestSchema } from 'models/requests/RegisterRequest';
 import 'reflect-metadata';
-import IAuthService from 'serviceTypes/IAuthService';
 import { IExpensesService } from 'serviceTypes/IExpensesService';
-import { IFamilyService } from 'serviceTypes/IFamilyService';
-import { IUsersService } from 'serviceTypes/IUsersService';
 import { SERVICE_SYMBOLS } from '../serviceTypes/serviceSymbols';
 
 @injectable()

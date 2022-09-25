@@ -1,8 +1,7 @@
 import client from 'models/client';
-import { Expense, Prisma, User } from '@prisma/client';
+import { Expense, Prisma } from '@prisma/client';
 import { injectable } from 'inversify';
 import 'reflect-metadata';
-import { IUsersRepository } from 'repositoryTypes/IUsersRepository';
 import { IExpensesRepository } from 'repositoryTypes/IExpensesRepository';
 
 @injectable()
