@@ -1,11 +1,11 @@
 import { injectable, inject } from 'inversify';
-import { Category } from '@prisma/client';
 import 'reflect-metadata';
 import { REPOSITORY_SYMBOLS } from '../repositoryTypes/repositorySymbols';
 import { ICategoriesService } from 'serviceTypes/ICategoriesService';
 import { ICategoryRepository } from 'repositoryTypes/ICategoriesRepository';
 import { AuthRequest } from 'middlewares/requiresAuth';
 import { InvalidDataError } from 'errors/InvalidDataError';
+import { AddCategoryResponse } from 'models/responses/AddCategoryResponse';
 
 @injectable()
 class CategoriesService implements ICategoriesService {
@@ -13,7 +13,7 @@ class CategoriesService implements ICategoriesService {
     @inject(REPOSITORY_SYMBOLS.ICategoriesRepository) private categoriesRepository: ICategoryRepository,
   ) {}
 
-  public async addCategory(req: AuthRequest): Promise<Category> {
+  public async addCategory(req: AuthRequest): Promise<AddCategoryResponse> {
     const { body } = req;
     await this.checkIfCategoryExistsInFamily(body.name, req.user.familyId);
     const category = {
