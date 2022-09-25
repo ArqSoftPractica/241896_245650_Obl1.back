@@ -6,6 +6,7 @@ import { ICategoryRepository } from 'repositoryTypes/ICategoriesRepository';
 import { AuthRequest } from 'middlewares/requiresAuth';
 import { InvalidDataError } from 'errors/InvalidDataError';
 import { AddCategoryResponse } from 'models/responses/AddCategoryResponse';
+import { ResourceNotFoundError } from 'errors/ResourceNotFoundError';
 
 @injectable()
 class CategoriesService implements ICategoriesService {
@@ -14,16 +15,19 @@ class CategoriesService implements ICategoriesService {
   ) {}
 
   public async addCategory(req: AuthRequest): Promise<AddCategoryResponse> {
-    const { body } = req;
-    await this.checkIfCategoryExistsInFamily(body.name, req.user.familyId);
+    const {
+      body: { name, description, monthlySpendingLimit },
+      user: { familyId },
+    } = req;
+    await this.checkIfCategoryNameExistsInFamily(name, familyId);
     const category = {
-      name: body.name,
-      description: body.description,
-      monthlySpendingLimit: body.monthlySpendingLimit,
+      name: name,
+      description: description,
+      monthlySpendingLimit: monthlySpendingLimit,
       imageURL: 'https://www.google.com',
       family: {
         connect: {
-          id: req.user.familyId,
+          id: familyId,
         },
       },
     };
@@ -32,11 +36,26 @@ class CategoriesService implements ICategoriesService {
     return categoryAdded;
   }
 
-  public async checkIfCategoryExistsInFamily(categoryName: string, familyId: number): Promise<void> {
+  private async checkIfCategoryNameExistsInFamily(categoryName: string, familyId: number): Promise<void> {
     const categoryExists = await this.categoriesRepository.categoryExistsInFamily(categoryName, familyId);
     if (categoryExists) {
       throw new InvalidDataError('Category already exists in family');
     }
+  }
+
+  public async deleteCategory(req: AuthRequest): Promise<void> {
+    const {
+      params: { categoryId },
+      user: { familyId },
+    } = req;
+    await this.checkCategoryIsInFamily(+categoryId, familyId);
+    await this.categoriesRepository.deleteCategory(+categoryId);
+  }
+
+  private async checkCategoryIsInFamily(categoryId: number, familyId: number): Promise<void> {
+    const category = await this.categoriesRepository.findById(categoryId);
+    const isNotCategoryInFamily = !category || category.familyId !== familyId;
+    if (isNotCategoryInFamily) throw new ResourceNotFoundError('Category not found');
   }
 }
 

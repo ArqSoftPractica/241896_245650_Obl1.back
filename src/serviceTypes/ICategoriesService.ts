@@ -3,4 +3,5 @@ import { AddCategoryResponse } from 'models/responses/AddCategoryResponse';
 
 export interface ICategoriesService {
   addCategory(req: Request): Promise<AddCategoryResponse>;
+  deleteCategory(req: Request): Promise<void>;
 }

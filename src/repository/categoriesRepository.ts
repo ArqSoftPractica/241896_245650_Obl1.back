@@ -1,6 +1,6 @@
 import client from 'models/client';
 import { injectable } from 'inversify';
-import { Prisma } from '@prisma/client';
+import { Category, Prisma } from '@prisma/client';
 import 'reflect-metadata';
 import { ICategoryRepository } from 'repositoryTypes/ICategoriesRepository';
 import { AddCategoryResponse } from 'models/responses/AddCategoryResponse';
@@ -32,6 +32,16 @@ class CategoriesRepository implements ICategoryRepository {
       },
     })) as AddCategoryResponse;
     return categoryCreated;
+  }
+
+  public async deleteCategory(categoryId: number): Promise<void> {
+    await client.category.delete({
+      where: { id: categoryId },
+    });
+  }
+
+  public async findById(categoryId: number): Promise<Category | null> {
+    return await client.category.findFirst({ where: { id: categoryId } });
   }
 }
 
