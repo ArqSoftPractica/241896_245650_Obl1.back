@@ -14,14 +14,17 @@ class ExpensesController {
   public path = '/expenses';
   public expensesRouter = express.Router();
 
-  public constructor(
-    @inject(SERVICE_SYMBOLS.IExpensesService) private _expensesService: IExpensesService,
-  ) {
+  public constructor(@inject(SERVICE_SYMBOLS.IExpensesService) private _expensesService: IExpensesService) {
     this.initializeRoutes();
   }
 
   public initializeRoutes() {
-    this.expensesRouter.post(this.path, requireScopedAuth('admin', 'user'), validate(CreateExpenseRequestSchema), this.createExpense);
+    this.expensesRouter.post(
+      this.path,
+      requireScopedAuth('admin', 'user'),
+      validate(CreateExpenseRequestSchema),
+      this.createExpense,
+    );
   }
 
   public createExpense = async (req: Request, res: Response) => {
