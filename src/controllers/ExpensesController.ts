@@ -141,10 +141,6 @@ class ExpensesController {
       });
     } catch (err) {
       console.error(err);
-      if (err instanceof ResourceNotFoundError) {
-        res.status(404).json({ message: err.message });
-        return;
-      }
       res.status(500).json({ message: 'Internal server error' });
     }
   };
