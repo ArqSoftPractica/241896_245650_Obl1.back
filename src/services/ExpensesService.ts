@@ -36,12 +36,13 @@ class ExpensesService implements IExpensesService {
 
   public async createExpense(requestData: CreateExpenseRequest, user: User): Promise<ExpenseDTO> {
     const { body } = requestData;
-    const { amount, date, categoryId } = body;
+    const { amount, date, categoryId, description } = body;
 
     await this.checkCategoryIsInFamily(categoryId, user.familyId);
 
     return this.expensesRepository.createExpense({
       amount,
+      description,
       date: new Date(date),
       category: {
         connect: {
@@ -57,12 +58,13 @@ class ExpensesService implements IExpensesService {
   public async updateExpense(requestData: UpdateExpenseRequest, user: User): Promise<Expense> {
     const { body, params } = requestData;
     const { expenseId } = params;
-    const { amount, date, categoryId } = body;
+    const { amount, date, categoryId, description } = body;
 
     await this.checkExpenseIsInFamily(expenseId, user.familyId);
 
     const newValues = {
       amount,
+      description,
       date: date ? new Date(date) : undefined,
       category: categoryId
         ? {
