@@ -103,6 +103,12 @@ class ExpensesService implements IExpensesService {
         amount: true,
         date: true,
         description: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
       skip: skip ? Number(skip) : undefined,
       take: take ? Number(take) : undefined,
