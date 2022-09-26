@@ -7,6 +7,7 @@ import { AuthRequest } from 'middlewares/requiresAuth';
 import { InvalidDataError } from 'errors/InvalidDataError';
 import { AddCategoryResponse } from 'models/responses/AddCategoryResponse';
 import { ResourceNotFoundError } from 'errors/ResourceNotFoundError';
+import { Category } from '@prisma/client';
 
 @injectable()
 class CategoriesService implements ICategoriesService {
@@ -50,8 +51,13 @@ class CategoriesService implements ICategoriesService {
       body,
     } = req;
 
-    await this.checkCategoryIsInFamily(+categoryId, familyId);
+    await this.checkCategoryCouldBeUpdated(categoryId, body, familyId);
     await this.categoriesRepository.updateCategory(+categoryId, body);
+  }
+
+  private async checkCategoryCouldBeUpdated(categoryId: string, body: any, familyId: number) {
+    const categoryToUpdate = await this.checkCategoryIsInFamily(+categoryId, familyId);
+    categoryToUpdate?.name !== body.name && (await this.checkIfCategoryNameExistsInFamily(body.name, familyId));
   }
 
   public async deleteCategory(req: AuthRequest): Promise<void> {
@@ -63,10 +69,11 @@ class CategoriesService implements ICategoriesService {
     await this.categoriesRepository.deleteCategory(+categoryId);
   }
 
-  private async checkCategoryIsInFamily(categoryId: number, familyId: number): Promise<void> {
+  private async checkCategoryIsInFamily(categoryId: number, familyId: number): Promise<Category> {
     const category = await this.categoriesRepository.findById(categoryId);
     const isNotCategoryInFamily = !category || category.familyId !== familyId;
     if (isNotCategoryInFamily) throw new ResourceNotFoundError('Category not found');
+    return category;
   }
 }
 
