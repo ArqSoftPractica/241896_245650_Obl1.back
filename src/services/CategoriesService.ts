@@ -51,13 +51,13 @@ class CategoriesService implements ICategoriesService {
       body,
     } = req;
 
-    await this.checkCategoryCouldBeUpdated(categoryId, body, familyId);
+    await this.checkCategoryCouldBeUpdated(categoryId, body.name, familyId);
     await this.categoriesRepository.updateCategory(+categoryId, body);
   }
 
-  private async checkCategoryCouldBeUpdated(categoryId: string, body: any, familyId: number) {
+  private async checkCategoryCouldBeUpdated(categoryId: string, newName: string, familyId: number) {
     const categoryToUpdate = await this.checkCategoryIsInFamily(+categoryId, familyId);
-    categoryToUpdate.name !== body.name && (await this.checkIfCategoryNameExistsInFamily(body.name, familyId));
+    newName && categoryToUpdate.name !== newName && (await this.checkIfCategoryNameExistsInFamily(newName, familyId));
   }
 
   public async deleteCategory(req: AuthRequest): Promise<void> {
