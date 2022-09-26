@@ -50,6 +50,10 @@ class CategoriesRepository implements ICategoryRepository {
   public async findById(categoryId: number): Promise<Category | null> {
     return await client.category.findFirst({ where: { id: categoryId } });
   }
+
+  public async findById(categoryId: number): Promise<Category | null> {
+    return await client.category.findFirst({ where: { id: categoryId } });
+  }
 }
 
 export default CategoriesRepository;
