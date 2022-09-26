@@ -86,7 +86,7 @@ class ExpensesService implements IExpensesService {
 
   public async getExpenses(requestData: GetExpensesRequest, user: User): Promise<ExpenseDTO[]> {
     const { query } = requestData;
-    const { from, to } = query;
+    const { from, to, skip, take } = query;
 
     const expenses = await this.expensesRepository.findMany({
       where: {
@@ -104,6 +104,8 @@ class ExpensesService implements IExpensesService {
         date: true,
         description: true,
       },
+      skip: skip ? Number(skip) : undefined,
+      take: take ? Number(take) : undefined,
     });
 
     return expenses;

@@ -14,6 +14,7 @@ class ExpensesRepository implements IExpensesRepository {
         id: true,
         amount: true,
         date: true,
+        description: true,
       },
     });
   }
