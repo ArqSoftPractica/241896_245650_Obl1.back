@@ -14,6 +14,13 @@ class ExpensesRepository implements IExpensesRepository {
         id: true,
         amount: true,
         date: true,
+        description: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
   }
@@ -42,6 +49,10 @@ class ExpensesRepository implements IExpensesRepository {
       },
     });
     return !!expense;
+  }
+
+  public async findMany(params: Prisma.ExpenseFindManyArgs): Promise<ExpenseDTO[]> {
+    return await client.expense.findMany(params);
   }
 }
 

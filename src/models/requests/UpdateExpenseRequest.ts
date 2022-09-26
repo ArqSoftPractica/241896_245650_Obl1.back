@@ -14,6 +14,7 @@ export const UpdateExpenseRequestSchema = z.object({
       }, z.date())
       .optional(),
     categoryId: z.number().min(1).optional(),
+    description: z.string().optional(),
   }),
 });
 

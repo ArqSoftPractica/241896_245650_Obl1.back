@@ -9,6 +9,7 @@ import { UpdateExpenseRequest } from 'models/requests/UpdateExpenseRequest';
 import { ResourceNotFoundError } from 'errors/ResourceNotFoundError';
 import { ICategoryRepository } from 'repositoryTypes/ICategoriesRepository';
 import { ExpenseDTO } from 'models/responses/ExpenseDTO';
+import { GetExpensesRequest } from 'models/requests/GetExpensesRequest';
 
 @injectable()
 class ExpensesService implements IExpensesService {
@@ -36,12 +37,13 @@ class ExpensesService implements IExpensesService {
 
   public async createExpense(requestData: CreateExpenseRequest, user: User): Promise<ExpenseDTO> {
     const { body } = requestData;
-    const { amount, date, categoryId } = body;
+    const { amount, date, categoryId, description } = body;
 
     await this.checkCategoryIsInFamily(categoryId, user.familyId);
 
     return this.expensesRepository.createExpense({
       amount,
+      description,
       date: new Date(date),
       category: {
         connect: {
@@ -57,12 +59,13 @@ class ExpensesService implements IExpensesService {
   public async updateExpense(requestData: UpdateExpenseRequest, user: User): Promise<Expense> {
     const { body, params } = requestData;
     const { expenseId } = params;
-    const { amount, date, categoryId } = body;
+    const { amount, date, categoryId, description } = body;
 
     await this.checkExpenseIsInFamily(expenseId, user.familyId);
 
     const newValues = {
       amount,
+      description,
       date: date ? new Date(date) : undefined,
       category: categoryId
         ? {
@@ -81,10 +84,37 @@ class ExpensesService implements IExpensesService {
     return this.expensesRepository.deleteExpense(expenseId);
   }
 
-  public async getExpenses(user: User): Promise<Expense[]> {
-    // return this.expensesRepository.getExpenses(user);
-    // TODO: family expenses
-    throw new Error('Not implemented');
+  public async getExpenses(requestData: GetExpensesRequest, user: User): Promise<ExpenseDTO[]> {
+    const { query } = requestData;
+    const { from, to, skip, take } = query;
+
+    const expenses = await this.expensesRepository.findMany({
+      where: {
+        date: {
+          gte: from ? new Date(from) : undefined,
+          lte: to ? new Date(to) : undefined,
+        },
+        category: {
+          familyId: user.familyId,
+        },
+      },
+      select: {
+        id: true,
+        amount: true,
+        date: true,
+        description: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      skip: skip ? Number(skip) : undefined,
+      take: take ? Number(take) : undefined,
+    });
+
+    return expenses;
   }
 
   public async getExpense(expenseId: number, user: User): Promise<Expense | null> {

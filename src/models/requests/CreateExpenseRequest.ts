@@ -7,6 +7,7 @@ export const CreateExpenseRequestSchema = z.object({
       if (typeof arg == 'string' || arg instanceof Date) return new Date(arg);
     }, z.date()),
     categoryId: z.number().min(1),
+    description: z.string(),
   }),
 });
 
