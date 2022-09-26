@@ -34,6 +34,13 @@ class CategoriesRepository implements ICategoryRepository {
     return categoryCreated;
   }
 
+  public async updateCategory(categoryId: number, newData: Prisma.CategoryCreateInput): Promise<void> {
+    await client.category.update({
+      data: newData,
+      where: { id: categoryId },
+    });
+  }
+
   public async deleteCategory(categoryId: number): Promise<void> {
     await client.category.delete({
       where: { id: categoryId },

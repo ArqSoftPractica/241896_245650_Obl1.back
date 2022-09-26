@@ -21,9 +21,9 @@ class CategoriesService implements ICategoriesService {
     } = req;
     await this.checkIfCategoryNameExistsInFamily(name, familyId);
     const category = {
-      name: name,
-      description: description,
-      monthlySpendingLimit: monthlySpendingLimit,
+      name,
+      description,
+      monthlySpendingLimit,
       imageURL: 'https://www.google.com',
       family: {
         connect: {
@@ -41,6 +41,17 @@ class CategoriesService implements ICategoriesService {
     if (categoryExists) {
       throw new InvalidDataError('Category already exists in family');
     }
+  }
+
+  public async updateCategory(req: AuthRequest): Promise<void> {
+    const {
+      params: { categoryId },
+      user: { familyId },
+      body,
+    } = req;
+
+    await this.checkCategoryIsInFamily(+categoryId, familyId);
+    await this.categoriesRepository.updateCategory(+categoryId, body);
   }
 
   public async deleteCategory(req: AuthRequest): Promise<void> {
