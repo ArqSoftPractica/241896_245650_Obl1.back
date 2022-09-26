@@ -82,7 +82,7 @@ class ExpensesController {
       const { body, params, user } = req as Request & { user: User; params: { expenseId: string } };
 
       const expenseId = parseInt(params.expenseId);
-      const expense = await this._expensesService.updateExpense(
+      await this._expensesService.updateExpense(
         {
           body,
           params: {
