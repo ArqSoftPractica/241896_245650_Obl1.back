@@ -1,7 +1,8 @@
 const REPOSITORY_SYMBOLS = {
-  IVoteRepository: Symbol.for('IVoteRepository'),
   IFamilyRepository: Symbol.for('IFamilyRepository'),
   IUsersRepository: Symbol.for('IUsersRepository'),
+  IExpensesRepository: Symbol.for('IExpensesRepository'),
+  ICategoriesRepository: Symbol.for('ICategoriesRepository'),
 };
 
 export { REPOSITORY_SYMBOLS };
