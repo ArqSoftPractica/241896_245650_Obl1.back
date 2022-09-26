@@ -7,6 +7,7 @@ import { AuthRequest } from 'middlewares/requiresAuth';
 import { InvalidDataError } from 'errors/InvalidDataError';
 import { AddCategoryResponse } from 'models/responses/AddCategoryResponse';
 import { ResourceNotFoundError } from 'errors/ResourceNotFoundError';
+import { Category } from '@prisma/client';
 
 @injectable()
 class CategoriesService implements ICategoriesService {
@@ -21,9 +22,9 @@ class CategoriesService implements ICategoriesService {
     } = req;
     await this.checkIfCategoryNameExistsInFamily(name, familyId);
     const category = {
-      name: name,
-      description: description,
-      monthlySpendingLimit: monthlySpendingLimit,
+      name,
+      description,
+      monthlySpendingLimit,
       imageURL: 'https://www.google.com',
       family: {
         connect: {
@@ -43,6 +44,22 @@ class CategoriesService implements ICategoriesService {
     }
   }
 
+  public async updateCategory(req: AuthRequest): Promise<void> {
+    const {
+      params: { categoryId },
+      user: { familyId },
+      body,
+    } = req;
+
+    await this.checkCategoryCouldBeUpdated(categoryId, body.name, familyId);
+    await this.categoriesRepository.updateCategory(+categoryId, body);
+  }
+
+  private async checkCategoryCouldBeUpdated(categoryId: string, newName: string, familyId: number) {
+    const categoryToUpdate = await this.checkCategoryIsInFamily(+categoryId, familyId);
+    newName && categoryToUpdate.name !== newName && (await this.checkIfCategoryNameExistsInFamily(newName, familyId));
+  }
+
   public async deleteCategory(req: AuthRequest): Promise<void> {
     const {
       params: { categoryId },
@@ -52,10 +69,11 @@ class CategoriesService implements ICategoriesService {
     await this.categoriesRepository.deleteCategory(+categoryId);
   }
 
-  private async checkCategoryIsInFamily(categoryId: number, familyId: number): Promise<void> {
+  private async checkCategoryIsInFamily(categoryId: number, familyId: number): Promise<Category> {
     const category = await this.categoriesRepository.findById(categoryId);
     const isNotCategoryInFamily = !category || category.familyId !== familyId;
     if (isNotCategoryInFamily) throw new ResourceNotFoundError('Category not found');
+    return category;
   }
 }
 
