@@ -8,6 +8,7 @@ import { validate } from 'middlewares/validate';
 import { CreateExpenseRequestSchema } from 'models/requests/CreateExpenseRequest';
 import { DeleteExpenseRequestSchema } from 'models/requests/DeleteExpenseRequest';
 import { GetExpenseRequestSchema } from 'models/requests/GetExpenseRequest';
+import { GetExpensesRequest, GetExpensesRequestSchema } from 'models/requests/GetExpensesRequest';
 import { UpdateExpenseRequestSchema } from 'models/requests/UpdateExpenseRequest';
 import 'reflect-metadata';
 import { IExpensesService } from 'serviceTypes/IExpensesService';
@@ -48,7 +49,12 @@ class ExpensesController {
       validate(DeleteExpenseRequestSchema),
       this.deleteExpense,
     );
-    this.expensesRouter.get(this.path, requireScopedAuth('admin', 'user'), this.getExpenses);
+    this.expensesRouter.get(
+      this.path,
+      requireScopedAuth('admin', 'user'),
+      validate(GetExpensesRequestSchema),
+      this.getExpenses,
+    );
   }
 
   public createExpense = async (req: Request, res: Response) => {
@@ -131,9 +137,9 @@ class ExpensesController {
 
   public getExpenses = async (req: Request, res: Response) => {
     try {
-      const { user } = req as Request & { user: User };
+      const { user, query } = req as Request & { user: User } & GetExpensesRequest;
 
-      const expenses = await this._expensesService.getExpenses(user);
+      const expenses = await this._expensesService.getExpenses({ query }, user);
 
       res.status(200).json({
         message: 'Expenses fetched successfully',

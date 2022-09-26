@@ -9,6 +9,7 @@ import { UpdateExpenseRequest } from 'models/requests/UpdateExpenseRequest';
 import { ResourceNotFoundError } from 'errors/ResourceNotFoundError';
 import { ICategoryRepository } from 'repositoryTypes/ICategoriesRepository';
 import { ExpenseDTO } from 'models/responses/ExpenseDTO';
+import { GetExpensesRequest } from 'models/requests/GetExpensesRequest';
 
 @injectable()
 class ExpensesService implements IExpensesService {
@@ -83,10 +84,29 @@ class ExpensesService implements IExpensesService {
     return this.expensesRepository.deleteExpense(expenseId);
   }
 
-  public async getExpenses(user: User): Promise<Expense[]> {
-    // return this.expensesRepository.getExpenses(user);
-    // TODO: family expenses
-    throw new Error('Not implemented');
+  public async getExpenses(requestData: GetExpensesRequest, user: User): Promise<ExpenseDTO[]> {
+    const { query } = requestData;
+    const { from, to } = query;
+
+    const expenses = await this.expensesRepository.findMany({
+      where: {
+        date: {
+          gte: from ? new Date(from) : undefined,
+          lte: to ? new Date(to) : undefined,
+        },
+        category: {
+          familyId: user.familyId,
+        },
+      },
+      select: {
+        id: true,
+        amount: true,
+        date: true,
+        description: true,
+      },
+    });
+
+    return expenses;
   }
 
   public async getExpense(expenseId: number, user: User): Promise<Expense | null> {

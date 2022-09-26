@@ -24,9 +24,11 @@ class UsersController {
     try {
       const { body } = req;
       await this._usersService.registerAdmin({ body });
-      res.status(201).send();
+      res.status(201).json({
+        message: 'Admin registered successfully',
+      });
     } catch (err) {
-      res.status(500).send(err);
+      res.status(500).json({ message: 'Internal server error' });
     }
   };
 }

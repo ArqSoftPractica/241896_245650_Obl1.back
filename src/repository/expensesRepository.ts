@@ -43,6 +43,10 @@ class ExpensesRepository implements IExpensesRepository {
     });
     return !!expense;
   }
+
+  public async findMany(params: Prisma.ExpenseFindManyArgs): Promise<ExpenseDTO[]> {
+    return await client.expense.findMany(params);
+  }
 }
 
 export default ExpensesRepository;
