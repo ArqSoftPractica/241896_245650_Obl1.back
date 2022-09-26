@@ -94,11 +94,6 @@ class ExpensesController {
 
       res.status(200).json({
         message: 'Expense updated successfully',
-        expense: {
-          id: expense.id,
-          amount: expense.amount,
-          date: expense.date,
-        },
       });
     } catch (err) {
       console.error(err);
