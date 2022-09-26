@@ -4,7 +4,7 @@ export const AddCategoryRequestSchema = z.object({
   body: z.object({
     name: z.string().min(1),
     description: z.string().min(1),
-    monthlySpendingLimit: z.number().min(0) || z.null(),
+    monthlySpendingLimit: z.number().min(0).optional(),
   }),
 });
 
