@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-
 export const CreateExpenseRequestSchema = z.object({
   body: z.object({
     amount: z.number().min(0),

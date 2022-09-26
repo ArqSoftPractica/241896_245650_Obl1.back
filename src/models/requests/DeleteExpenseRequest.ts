@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-
 export const DeleteExpenseRequestSchema = z.object({
   params: z.object({
     expenseId: z.preprocess((arg) => {

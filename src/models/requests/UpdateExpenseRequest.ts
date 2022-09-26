@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-
 export const UpdateExpenseRequestSchema = z.object({
   params: z.object({
     expenseId: z.preprocess((arg) => {

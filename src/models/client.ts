@@ -11,6 +11,7 @@ if (process.env.NODE_ENV === 'development') global.prisma = prisma;
 
 const CATEGORY_MODEL_NAME = 'Category';
 const EXPENSE_MODEL_NAME = 'Expense';
+
 // Middlewares for soft delete
 
 prisma.$use(async (params, next) => {

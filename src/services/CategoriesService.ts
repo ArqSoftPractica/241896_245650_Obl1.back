@@ -1,11 +1,13 @@
 import { injectable, inject } from 'inversify';
-import { Category } from '@prisma/client';
 import 'reflect-metadata';
 import { REPOSITORY_SYMBOLS } from '../repositoryTypes/repositorySymbols';
 import { ICategoriesService } from 'serviceTypes/ICategoriesService';
 import { ICategoryRepository } from 'repositoryTypes/ICategoriesRepository';
 import { AuthRequest } from 'middlewares/requiresAuth';
 import { InvalidDataError } from 'errors/InvalidDataError';
+import { AddCategoryResponse } from 'models/responses/AddCategoryResponse';
+import { ResourceNotFoundError } from 'errors/ResourceNotFoundError';
+import { Category } from '@prisma/client';
 
 @injectable()
 class CategoriesService implements ICategoriesService {
@@ -13,17 +15,20 @@ class CategoriesService implements ICategoriesService {
     @inject(REPOSITORY_SYMBOLS.ICategoriesRepository) private categoriesRepository: ICategoryRepository,
   ) {}
 
-  public async addCategory(req: AuthRequest): Promise<Category> {
-    const { body } = req;
-    await this.checkIfCategoryExistsInFamily(body.name, req.user.familyId);
+  public async addCategory(req: AuthRequest): Promise<AddCategoryResponse> {
+    const {
+      body: { name, description, monthlySpendingLimit },
+      user: { familyId },
+    } = req;
+    await this.checkIfCategoryNameExistsInFamily(name, familyId);
     const category = {
-      name: body.name,
-      description: body.description,
-      monthlySpendingLimit: body.monthlySpendingLimit,
+      name,
+      description,
+      monthlySpendingLimit,
       imageURL: 'https://www.google.com',
       family: {
         connect: {
-          id: req.user.familyId,
+          id: familyId,
         },
       },
     };
@@ -32,11 +37,43 @@ class CategoriesService implements ICategoriesService {
     return categoryAdded;
   }
 
-  public async checkIfCategoryExistsInFamily(categoryName: string, familyId: number): Promise<void> {
+  private async checkIfCategoryNameExistsInFamily(categoryName: string, familyId: number): Promise<void> {
     const categoryExists = await this.categoriesRepository.categoryExistsInFamily(categoryName, familyId);
     if (categoryExists) {
       throw new InvalidDataError('Category already exists in family');
     }
+  }
+
+  public async updateCategory(req: AuthRequest): Promise<void> {
+    const {
+      params: { categoryId },
+      user: { familyId },
+      body,
+    } = req;
+
+    await this.checkCategoryCouldBeUpdated(categoryId, body.name, familyId);
+    await this.categoriesRepository.updateCategory(+categoryId, body);
+  }
+
+  private async checkCategoryCouldBeUpdated(categoryId: string, newName: string, familyId: number) {
+    const categoryToUpdate = await this.checkCategoryIsInFamily(+categoryId, familyId);
+    newName && categoryToUpdate.name !== newName && (await this.checkIfCategoryNameExistsInFamily(newName, familyId));
+  }
+
+  public async deleteCategory(req: AuthRequest): Promise<void> {
+    const {
+      params: { categoryId },
+      user: { familyId },
+    } = req;
+    await this.checkCategoryIsInFamily(+categoryId, familyId);
+    await this.categoriesRepository.deleteCategory(+categoryId);
+  }
+
+  private async checkCategoryIsInFamily(categoryId: number, familyId: number): Promise<Category> {
+    const category = await this.categoriesRepository.findById(categoryId);
+    const isNotCategoryInFamily = !category || category.familyId !== familyId;
+    if (isNotCategoryInFamily) throw new ResourceNotFoundError('Category not found');
+    return category;
   }
 }
 
