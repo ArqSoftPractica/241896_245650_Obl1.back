@@ -2,7 +2,7 @@ import express from 'express';
 import { Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
 import { InvalidDataError } from 'errors/InvalidDataError';
-import { requireScopedAuth } from 'middlewares/requiresAuth';
+import { requireScopedAuth, requiresApiKey } from 'middlewares/requiresAuth';
 import { validate } from 'middlewares/validate';
 import { AddCategoryRequestSchema } from 'models/requests/AddCategoryRequest';
 import 'reflect-metadata';
@@ -40,6 +40,7 @@ class CategoryController {
       validate(DeleteCategoryRequestSchema),
       this.deleteCategory,
     );
+    this.categoriesRouter.get(`${this.path}/ranking`, requiresApiKey, this.getTop3CategoriesWithMoreExpenses);
   }
 
   public addCategory = async (req: Request, res: Response) => {
@@ -85,6 +86,18 @@ class CategoryController {
         res.status(err.code).json({ message: err.message });
         return;
       }
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  };
+
+  public getTop3CategoriesWithMoreExpenses = async (req: Request, res: Response) => {
+    try {
+      const categories = await this._categoriesService.getTop3CategoriesWithMoreExpenses(req);
+      res.status(200).json({
+        message: `Top 3 categories with more expenses fetched successfully`,
+        categories: categories,
+      });
+    } catch (err) {
       res.status(500).json({ message: 'Internal Server Error' });
     }
   };

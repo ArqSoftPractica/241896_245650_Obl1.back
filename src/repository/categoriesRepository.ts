@@ -4,6 +4,7 @@ import { Category, Prisma } from '@prisma/client';
 import 'reflect-metadata';
 import { ICategoryRepository } from 'repositoryTypes/ICategoriesRepository';
 import { AddCategoryResponse } from 'models/responses/AddCategoryResponse';
+import { Top3CategoryWithMoreExpenses } from 'models/responses/Top3CategoryWithMoreExpenses';
 
 @injectable()
 class CategoriesRepository implements ICategoryRepository {
@@ -49,6 +50,25 @@ class CategoriesRepository implements ICategoryRepository {
 
   public async findById(categoryId: number): Promise<Category | null> {
     return await client.category.findFirst({ where: { id: categoryId } });
+  }
+
+  public async getTop3CategoriesWithMoreExpenses(familyId: number): Promise<Top3CategoryWithMoreExpenses[]> {
+    const top3CategoriesWithMoreExpenses: Top3CategoryWithMoreExpenses[] = await client.$queryRaw`
+      SELECT
+        category.name,
+        SUM(expense.amount) AS totalAmount
+      FROM
+        expense
+      INNER JOIN category ON expense.categoryId = category.id
+      WHERE
+        category.familyId = ${familyId}
+      GROUP BY
+        category.name
+      ORDER BY
+        totalAmount DESC
+      LIMIT 3
+    `;
+    return top3CategoriesWithMoreExpenses;
   }
 }
 

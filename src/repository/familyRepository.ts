@@ -6,9 +6,14 @@ import { IFamilyRepository } from 'repositoryTypes/IFamilyRepository';
 
 @injectable()
 class FamilyRepository implements IFamilyRepository {
+  public async getByApiKey(apiKey: string): Promise<Family | null> {
+    return client.family.findUnique({ where: { apiKey } });
+  }
+
   public async updateFamily(familyId: number, newValues: Prisma.FamilyUpdateInput): Promise<Family> {
     return await client.family.update({ where: { id: familyId }, data: newValues });
   }
+
   public async findById(familyId: number): Promise<Family> {
     return await client.family.findUniqueOrThrow({ where: { id: familyId } });
   }
