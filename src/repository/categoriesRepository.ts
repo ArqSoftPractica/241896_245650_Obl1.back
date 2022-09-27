@@ -56,6 +56,7 @@ class CategoriesRepository implements ICategoryRepository {
     const top3CategoriesWithMoreExpenses: Top3CategoryWithMoreExpenses[] = await client.$queryRaw`
       SELECT
         category.name,
+        category.id,
         SUM(expense.amount) AS totalAmount
       FROM
         expense
@@ -63,7 +64,7 @@ class CategoriesRepository implements ICategoryRepository {
       WHERE
         category.familyId = ${familyId}
       GROUP BY
-        category.name
+        category.name, category.id
       ORDER BY
         totalAmount DESC
       LIMIT 3
