@@ -2,6 +2,7 @@ import { injectable } from 'inversify';
 import 'reflect-metadata';
 
 import { IEmailService } from 'serviceTypes/IEmailService';
+import emailClient from 'helpers/EmailClient';
 
 @injectable()
 class EmailService implements IEmailService {
@@ -20,12 +21,16 @@ class EmailService implements IEmailService {
     const body = this.getInviteEmailBody(link);
 
     const emailJobPayload = {
+      from: process.env.EMAIL_SENDER,
       to: email,
       subject: 'Family Invite',
-      body,
+      text: body,
     };
 
-    console.log(email, token);
+    emailClient
+      .sendMail(emailJobPayload)
+      .then(() => console.log(`Invite email sent to ${email}`))
+      .catch((error) => console.error(error));
   }
 }
 
