@@ -3,11 +3,12 @@ import 'reflect-metadata';
 import { REPOSITORY_SYMBOLS } from '../repositoryTypes/repositorySymbols';
 import { ICategoriesService } from 'serviceTypes/ICategoriesService';
 import { ICategoryRepository } from 'repositoryTypes/ICategoriesRepository';
-import { AuthRequest } from 'middlewares/requiresAuth';
+import { ApiKeyRequest, AuthRequest } from 'middlewares/requiresAuth';
 import { InvalidDataError } from 'errors/InvalidDataError';
 import { AddCategoryResponse } from 'models/responses/AddCategoryResponse';
 import { ResourceNotFoundError } from 'errors/ResourceNotFoundError';
-import { Category } from '@prisma/client';
+import { Category, Family } from '@prisma/client';
+import { Top3CategoryWithMoreExpenses } from 'models/responses/Top3CategoryWithMoreExpenses';
 
 @injectable()
 class CategoriesService implements ICategoriesService {
@@ -74,6 +75,14 @@ class CategoriesService implements ICategoriesService {
     const isNotCategoryInFamily = !category || category.familyId !== familyId;
     if (isNotCategoryInFamily) throw new ResourceNotFoundError('Category not found');
     return category;
+  }
+
+  public async getTop3CategoriesWithMoreExpenses(req: ApiKeyRequest): Promise<Top3CategoryWithMoreExpenses[]> {
+    const {
+      family: { id: familyId },
+    } = req as ApiKeyRequest & { family: Family };
+
+    return await this.categoriesRepository.getTop3CategoriesWithMoreExpenses(familyId);
   }
 }
 

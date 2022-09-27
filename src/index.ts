@@ -82,11 +82,6 @@ app.use('/api/v1', authController.authRouter);
 app.use('/api/v1', expensesController.expensesRouter);
 app.use('/api/v1', categoriesController.categoriesRouter);
 
-// app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-//   console.error(err.stack);
-//   res.status(500).send('Something broke!');
-// });
-
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}: http://localhost:${PORT}`);
 });
