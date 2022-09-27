@@ -9,11 +9,14 @@ import { AddCategoryResponse } from 'models/responses/AddCategoryResponse';
 import { ResourceNotFoundError } from 'errors/ResourceNotFoundError';
 import { Category, Family } from '@prisma/client';
 import { Top3CategoryWithMoreExpenses } from 'models/responses/Top3CategoryWithMoreExpenses';
+import { ExpenseDTO } from 'models/responses/ExpenseDTO';
+import { IExpensesRepository } from 'repositoryTypes/IExpensesRepository';
 
 @injectable()
 class CategoriesService implements ICategoriesService {
   public constructor(
     @inject(REPOSITORY_SYMBOLS.ICategoriesRepository) private categoriesRepository: ICategoryRepository,
+    @inject(REPOSITORY_SYMBOLS.IExpensesRepository) private expensesRepository: IExpensesRepository,
   ) {}
 
   public async addCategory(req: AuthRequest): Promise<AddCategoryResponse> {
@@ -83,6 +86,45 @@ class CategoriesService implements ICategoriesService {
     } = req as ApiKeyRequest & { family: Family };
 
     return await this.categoriesRepository.getTop3CategoriesWithMoreExpenses(familyId);
+  }
+
+  public async getExpensesOfCategory(req: ApiKeyRequest): Promise<ExpenseDTO[]> {
+    const {
+      family: { id: familyId },
+      query: { from, to, skip, take },
+      params: { categoryId },
+    } = req as ApiKeyRequest & { family: Family } & { query: { from: string; to: string; skip: string; take: string } };
+
+    await this.checkCategoryIsInFamily(+categoryId, familyId);
+
+    const expenses = await this.expensesRepository.findMany({
+      where: {
+        date: {
+          gte: from ? new Date(from) : undefined,
+          lte: to ? new Date(to) : undefined,
+        },
+        category: {
+          familyId: familyId,
+          id: +categoryId,
+        },
+      },
+      select: {
+        id: true,
+        amount: true,
+        date: true,
+        description: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      skip: skip ? Number(skip) : undefined,
+      take: take ? Number(take) : undefined,
+    });
+
+    return expenses;
   }
 }
 

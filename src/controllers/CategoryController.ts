@@ -11,6 +11,7 @@ import { SERVICE_SYMBOLS } from '../serviceTypes/serviceSymbols';
 import { DeleteCategoryRequestSchema } from 'models/requests/DeleteCategoryRequest';
 import { ResourceNotFoundError } from 'errors/ResourceNotFoundError';
 import { UpdateCategoryRequestSchema } from 'models/requests/UpdateCategoryRequestSchema';
+import { GetExpensesOfCategoryRequestSchema } from 'models/requests/GetExpensesOfCategoryRequest';
 
 @injectable()
 class CategoryController {
@@ -41,6 +42,12 @@ class CategoryController {
       this.deleteCategory,
     );
     this.categoriesRouter.get(`${this.path}/ranking`, requiresApiKey, this.getTop3CategoriesWithMoreExpenses);
+    this.categoriesRouter.get(
+      `${this.path}/:categoryId/expenses`,
+      requiresApiKey,
+      validate(GetExpensesOfCategoryRequestSchema),
+      this.getExpensesOfCategory,
+    );
   }
 
   public addCategory = async (req: Request, res: Response) => {
@@ -98,6 +105,22 @@ class CategoryController {
         categories: categories,
       });
     } catch (err) {
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  };
+
+  public getExpensesOfCategory = async (req: Request, res: Response) => {
+    try {
+      const expenses = await this._categoriesService.getExpensesOfCategory(req);
+      res.status(200).json({
+        message: `Expenses fetched successfully`,
+        expenses: expenses,
+      });
+    } catch (err) {
+      if (err instanceof ResourceNotFoundError) {
+        res.status(err.code).json({ message: err.message });
+        return;
+      }
       res.status(500).json({ message: 'Internal Server Error' });
     }
   };
