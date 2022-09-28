@@ -9,12 +9,13 @@
     "d:down": "docker-compose -f docker/docker-compose.yaml down",
     "dev": "export NODE_OPTIONS=\"--max-old-space-size=4096\" && NODE_PATH=./src ts-node-dev --poll --respawn --pretty --transpile-only src/index.ts",
     "start": "export NODE_OPTIONS=\"--max-old-space-size=8192\" && NODE_PATH=dist/ node ./dist/index.js",
-    "drb": "docker build -t \"aspback\" . -f ./docker/Dockerfile && docker run -d -p 80:80 --name aspback -v \"aspback:/var/log\" --env-file ./env ",
+    "drb": "docker build -t \"aspback\" . -f ./Dockerfile && docker run -d -p 80:80 --name aspback -v \"aspback:/var/log\" --env-file ./env ",
     "build": "tsc",
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
     "prepare": "if [[ $NODE_ENVIRONMENT != \"production\" ]]; then husky install; fi",
-    "studio": "prisma studio"
+    "studio": "prisma studio",
+    "prisma:generate": "prisma generate"
   },
   "keywords": [],
   "author": "",
