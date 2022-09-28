@@ -11,6 +11,7 @@ import { SERVICE_SYMBOLS } from '../serviceTypes/serviceSymbols';
 import { DeleteCategoryRequestSchema } from 'models/requests/DeleteCategoryRequest';
 import { ResourceNotFoundError } from 'errors/ResourceNotFoundError';
 import { UpdateCategoryRequestSchema } from 'models/requests/UpdateCategoryRequestSchema';
+import { GetCategoriesRequestSchema } from 'models/requests/GetCategoriesRequest';
 
 @injectable()
 class CategoryController {
@@ -41,6 +42,12 @@ class CategoryController {
       this.deleteCategory,
     );
     this.categoriesRouter.get(`${this.path}/ranking`, requiresApiKey, this.getTop3CategoriesWithMoreExpenses);
+    this.categoriesRouter.get(
+      this.path,
+      requireScopedAuth('admin'),
+      validate(GetCategoriesRequestSchema),
+      this.getCategories,
+    );
   }
 
   public addCategory = async (req: Request, res: Response) => {
@@ -99,6 +106,20 @@ class CategoryController {
       });
     } catch (err) {
       res.status(500).json({ message: 'Internal Server Error' });
+    }
+  };
+
+  public getCategories = async (req: Request, res: Response) => {
+    try {
+      const categories = await this._categoriesService.getCategories(req);
+
+      res.status(200).json({
+        message: 'Categories fetched successfully',
+        categories,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Internal server error' });
     }
   };
 }
