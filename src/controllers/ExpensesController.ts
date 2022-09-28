@@ -110,16 +110,9 @@ class ExpensesController {
       const { params, user } = req as Request & { user: User; params: { expenseId: string } };
 
       const expenseId = parseInt(params.expenseId);
-      const expense = await this._expensesService.deleteExpense(expenseId, user);
+      await this._expensesService.deleteExpense(expenseId, user);
 
-      res.status(200).json({
-        message: 'Expense deleted successfully',
-        expense: {
-          id: expense.id,
-          amount: expense.amount,
-          date: expense.date,
-        },
-      });
+      res.status(200).json({ message: 'Expense deleted successfully' });
     } catch (err) {
       console.error(err);
       if (err instanceof ResourceNotFoundError) {
