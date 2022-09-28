@@ -21,7 +21,7 @@ class CategoriesService implements ICategoriesService {
 
   public async addCategory(req: AuthRequest): Promise<CategoryDTO> {
     const {
-      body: { name, description, monthlySpendingLimit },
+      body: { name, description, monthlySpendingLimit, image },
       user: { familyId },
     } = req;
     await this.checkIfCategoryNameExistsInFamily(name, familyId);
@@ -29,7 +29,7 @@ class CategoriesService implements ICategoriesService {
       name,
       description,
       monthlySpendingLimit,
-      imageURL: 'https://www.google.com',
+      image: image,
       family: {
         connect: {
           id: familyId,
@@ -141,7 +141,7 @@ class CategoriesService implements ICategoriesService {
         name: true,
         description: true,
         monthlySpendingLimit: true,
-        imageURL: true,
+        image: true,
       },
       skip: skip ? Number(skip) : undefined,
       take: take ? Number(take) : undefined,

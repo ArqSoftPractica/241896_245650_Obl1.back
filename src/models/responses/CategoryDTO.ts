@@ -3,6 +3,6 @@ export interface CategoryDTO {
   name: string;
   description: string;
   monthlySpendingLimit: number;
-  imageURL: string;
+  image: string;
   createdAt: Date;
 }
