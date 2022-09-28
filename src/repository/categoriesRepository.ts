@@ -3,7 +3,7 @@ import { injectable } from 'inversify';
 import { Category, Prisma } from '@prisma/client';
 import 'reflect-metadata';
 import { ICategoryRepository } from 'repositoryTypes/ICategoriesRepository';
-import { AddCategoryResponse } from 'models/responses/AddCategoryResponse';
+import { CategoryDTO } from 'models/responses/CategoryDTO';
 import { Top3CategoryWithMoreExpenses } from 'models/responses/Top3CategoryWithMoreExpenses';
 
 @injectable()
@@ -20,7 +20,7 @@ class CategoriesRepository implements ICategoryRepository {
     return !!category;
   }
 
-  public async createCategory(category: Prisma.CategoryCreateInput): Promise<AddCategoryResponse> {
+  public async createCategory(category: Prisma.CategoryCreateInput): Promise<CategoryDTO> {
     const categoryCreated = (await client.category.create({
       data: category,
       select: {
@@ -31,7 +31,7 @@ class CategoriesRepository implements ICategoryRepository {
         imageURL: true,
         createdAt: true,
       },
-    })) as AddCategoryResponse;
+    })) as CategoryDTO;
     return categoryCreated;
   }
 
@@ -70,6 +70,11 @@ class CategoriesRepository implements ICategoryRepository {
       LIMIT 3
     `;
     return top3CategoriesWithMoreExpenses;
+  }
+
+  public async findMany(params: Prisma.CategoryFindManyArgs): Promise<CategoryDTO[]> {
+    const categories = await client.category.findMany(params);
+    return categories;
   }
 }
 

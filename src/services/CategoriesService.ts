@@ -5,7 +5,7 @@ import { ICategoriesService } from 'serviceTypes/ICategoriesService';
 import { ICategoryRepository } from 'repositoryTypes/ICategoriesRepository';
 import { ApiKeyRequest, AuthRequest } from 'middlewares/requiresAuth';
 import { InvalidDataError } from 'errors/InvalidDataError';
-import { AddCategoryResponse } from 'models/responses/AddCategoryResponse';
+import { CategoryDTO } from 'models/responses/CategoryDTO';
 import { ResourceNotFoundError } from 'errors/ResourceNotFoundError';
 import { Category, Family } from '@prisma/client';
 import { Top3CategoryWithMoreExpenses } from 'models/responses/Top3CategoryWithMoreExpenses';
@@ -19,7 +19,7 @@ class CategoriesService implements ICategoriesService {
     @inject(REPOSITORY_SYMBOLS.IExpensesRepository) private expensesRepository: IExpensesRepository,
   ) {}
 
-  public async addCategory(req: AuthRequest): Promise<AddCategoryResponse> {
+  public async addCategory(req: AuthRequest): Promise<CategoryDTO> {
     const {
       body: { name, description, monthlySpendingLimit },
       user: { familyId },
@@ -123,8 +123,31 @@ class CategoriesService implements ICategoriesService {
       skip: skip ? Number(skip) : undefined,
       take: take ? Number(take) : undefined,
     });
-
     return expenses;
+  }
+
+  public async getCategories(req: AuthRequest): Promise<CategoryDTO[]> {
+    const {
+      user: { familyId },
+      query: { skip, take },
+    } = req;
+
+    const categories: CategoryDTO[] = await this.categoriesRepository.findMany({
+      where: {
+        familyId,
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        monthlySpendingLimit: true,
+        imageURL: true,
+      },
+      skip: skip ? Number(skip) : undefined,
+      take: take ? Number(take) : undefined,
+    });
+
+    return categories;
   }
 }
 
