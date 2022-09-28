@@ -1,4 +1,4 @@
-export interface AddCategoryResponse {
+export interface CategoryDTO {
   id: number;
   name: string;
   description: string;
