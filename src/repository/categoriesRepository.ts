@@ -28,7 +28,7 @@ class CategoriesRepository implements ICategoryRepository {
         name: true,
         description: true,
         monthlySpendingLimit: true,
-        imageURL: true,
+        image: true,
         createdAt: true,
       },
     })) as CategoryDTO;
