@@ -4,6 +4,7 @@ import { injectable } from 'inversify';
 import 'reflect-metadata';
 import { IExpensesRepository } from 'repositoryTypes/IExpensesRepository';
 import { ExpenseDTO } from 'models/responses/ExpenseDTO';
+import { ExpensePerCategoryDTO } from 'models/responses/ExpensesPerCategoryDTO';
 
 @injectable()
 class ExpensesRepository implements IExpensesRepository {
@@ -53,6 +54,30 @@ class ExpensesRepository implements IExpensesRepository {
 
   public async findMany(params: Prisma.ExpenseFindManyArgs): Promise<ExpenseDTO[]> {
     return await client.expense.findMany(params);
+  }
+
+  public async getExpensesPerCategory(
+    familyId: number,
+    from: Date | undefined,
+    to: Date | undefined,
+  ): Promise<ExpensePerCategoryDTO[]> {
+    const expensesPerCategory: ExpensePerCategoryDTO[] = await client.$queryRaw`
+      SELECT
+        category.id,
+        category.name,
+        SUM(expense.amount) AS totalAmount
+      FROM
+        expense
+      INNER JOIN category ON expense.categoryId = category.id
+      WHERE
+        category.familyId = ${familyId}
+        AND category.deleted IS NULL
+        AND expense.date >= ${from || '1900-01-01'}
+        AND expense.date <= ${to || '2100-01-01'}
+      GROUP BY
+        category.id
+    `;
+    return expensesPerCategory;
   }
 }
 

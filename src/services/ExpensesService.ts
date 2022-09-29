@@ -10,6 +10,8 @@ import { ResourceNotFoundError } from 'errors/ResourceNotFoundError';
 import { ICategoryRepository } from 'repositoryTypes/ICategoriesRepository';
 import { ExpenseDTO } from 'models/responses/ExpenseDTO';
 import { GetExpensesRequest } from 'models/requests/GetExpensesRequest';
+import { ExpensePerCategoryDTO } from 'models/responses/ExpensesPerCategoryDTO';
+import { AuthRequest } from 'middlewares/requiresAuth';
 
 @injectable()
 class ExpensesService implements IExpensesService {
@@ -124,6 +126,21 @@ class ExpensesService implements IExpensesService {
     if (!expense) throw new ResourceNotFoundError('Expense not found');
 
     return expense;
+  }
+
+  public async getExpensesPerCategory(req: AuthRequest): Promise<ExpensePerCategoryDTO[]> {
+    const {
+      user: { familyId },
+      query: { from, to },
+    } = req as AuthRequest & { query: { from: string; to: string }; user: { familyId: number } };
+
+    const ExpensesPerCategory: ExpensePerCategoryDTO[] = await this.expensesRepository.getExpensesPerCategory(
+      familyId,
+      from ? new Date(from) : undefined,
+      to ? new Date(to) : undefined,
+    );
+
+    return ExpensesPerCategory;
   }
 }
 
