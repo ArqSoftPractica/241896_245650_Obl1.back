@@ -8,6 +8,7 @@ import { validate } from 'middlewares/validate';
 import { CreateExpenseRequestSchema } from 'models/requests/CreateExpenseRequest';
 import { DeleteExpenseRequestSchema } from 'models/requests/DeleteExpenseRequest';
 import { GetExpenseRequestSchema } from 'models/requests/GetExpenseRequest';
+import { GetExpensesPerCategoryRequestSchema } from 'models/requests/GetExpensesPerCategoryRequest';
 import { GetExpensesRequest, GetExpensesRequestSchema } from 'models/requests/GetExpensesRequest';
 import { UpdateExpenseRequestSchema } from 'models/requests/UpdateExpenseRequest';
 import 'reflect-metadata';
@@ -30,7 +31,6 @@ class ExpensesController {
       validate(CreateExpenseRequestSchema),
       this.createExpense,
     );
-
     this.expensesRouter.get(
       `${this.path}/:expenseId`,
       requireScopedAuth('admin', 'user'),
@@ -54,6 +54,12 @@ class ExpensesController {
       requireScopedAuth('admin', 'user'),
       validate(GetExpensesRequestSchema),
       this.getExpenses,
+    );
+    this.expensesRouter.get(
+      `/analytics${this.path}`,
+      requireScopedAuth('admin', 'user'),
+      validate(GetExpensesPerCategoryRequestSchema),
+      this.getExpensesPerCategory,
     );
   }
 
@@ -165,6 +171,19 @@ class ExpensesController {
         return;
       }
 
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
+  public getExpensesPerCategory = async (req: Request, res: Response) => {
+    try {
+      const expensesPerCategory = await this._expensesService.getExpensesPerCategory(req);
+      res.status(200).json({
+        message: 'Expenses per category fetched successfully',
+        expensesPerCategory,
+      });
+    } catch (err) {
+      console.error(err);
       res.status(500).json({ message: 'Internal server error' });
     }
   };
