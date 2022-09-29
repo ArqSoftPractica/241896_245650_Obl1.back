@@ -63,8 +63,10 @@ class CategoriesRepository implements ICategoryRepository {
       INNER JOIN category ON expense.categoryId = category.id
       WHERE
         category.familyId = ${familyId}
+        AND expense.deleted IS NULL
+        AND category.deleted IS NULL
       GROUP BY
-        category.name, category.id
+        category.id
       ORDER BY
         totalAmount DESC
       LIMIT 3

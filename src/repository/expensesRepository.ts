@@ -72,6 +72,7 @@ class ExpensesRepository implements IExpensesRepository {
       WHERE
         category.familyId = ${familyId}
         AND category.deleted IS NULL
+        AND expense.deleted IS NULL
         AND expense.date >= ${from || '1900-01-01'}
         AND expense.date <= ${to || '2100-01-01'}
       GROUP BY
