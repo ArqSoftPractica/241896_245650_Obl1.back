@@ -30,7 +30,7 @@ class ExpensesService implements IExpensesService {
   }
 
   private async checkExpenseIsInFamily(expenseId: number, familyId: number): Promise<boolean> {
-    const isExpenseInFamily = this.expensesRepository.isExpenseInFamily(expenseId, familyId);
+    const isExpenseInFamily = await this.expensesRepository.isExpenseInFamily(expenseId, familyId);
 
     if (!isExpenseInFamily) throw new ResourceNotFoundError('Expense not found');
 
@@ -43,7 +43,7 @@ class ExpensesService implements IExpensesService {
 
     await this.checkCategoryIsInFamily(categoryId, user.familyId);
 
-    return this.expensesRepository.createExpense({
+    return await this.expensesRepository.createExpense({
       amount,
       description,
       date: new Date(date),
@@ -78,12 +78,12 @@ class ExpensesService implements IExpensesService {
         : undefined,
     };
 
-    return this.expensesRepository.updateExpense(expenseId, newValues);
+    return await this.expensesRepository.updateExpense(expenseId, newValues);
   }
 
   public async deleteExpense(expenseId: number, user: User): Promise<Expense> {
     await this.checkExpenseIsInFamily(expenseId, user.familyId);
-    return this.expensesRepository.deleteExpense(expenseId);
+    return await this.expensesRepository.deleteExpense(expenseId);
   }
 
   public async getExpenses(requestData: GetExpensesRequest, user: User): Promise<ExpenseDTO[]> {
