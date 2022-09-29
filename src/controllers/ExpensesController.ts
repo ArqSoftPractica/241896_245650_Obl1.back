@@ -103,6 +103,10 @@ class ExpensesController {
       });
     } catch (err) {
       console.error(err);
+      if (err instanceof Error) {
+        res.status(500).json({ message: err.message });
+        return;
+      }
       if (err instanceof ResourceNotFoundError) {
         res.status(404).json({ message: err.message });
         return;

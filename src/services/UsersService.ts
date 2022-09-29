@@ -1,6 +1,7 @@
 import { injectable, inject } from 'inversify';
 import crypto from 'crypto';
 import 'reflect-metadata';
+import { v4 as uuidv4 } from 'uuid';
 import { REPOSITORY_SYMBOLS } from '../repositoryTypes/repositorySymbols';
 import { IUsersService } from 'serviceTypes/IUsersService';
 import { RegisterAdminRequest } from 'models/requests/RegisterAdminRequest';
@@ -65,7 +66,7 @@ class UsersService implements IUsersService {
       family: {
         connectOrCreate: {
           where: { name: familyName },
-          create: { name: familyName },
+          create: { name: familyName, apiKey: `family-costs-${uuidv4()}` },
         },
       },
       role: 'admin',
