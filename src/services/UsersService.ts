@@ -11,6 +11,7 @@ import { SERVICE_SYMBOLS } from 'serviceTypes/serviceSymbols';
 import IAuthService from 'serviceTypes/IAuthService';
 import { IEmailService } from 'serviceTypes/IEmailService';
 import { RegisterRequest } from 'models/requests/RegisterRequest';
+import { InvalidDataError } from 'errors/InvalidDataError';
 
 @injectable()
 class UsersService implements IUsersService {
@@ -55,6 +56,8 @@ class UsersService implements IUsersService {
 
     const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
 
+    await this.checkUserIsNotAlreadyRegistered(email);
+
     await this.usersRepository.createUser({
       email,
       name,
@@ -67,6 +70,14 @@ class UsersService implements IUsersService {
       },
       role: 'admin',
     });
+  }
+
+  public async checkUserIsNotAlreadyRegistered(email: string): Promise<void> {
+    const user = await this.usersRepository.getUserByEmail(email);
+
+    if (user) {
+      throw new InvalidDataError('User already exists');
+    }
   }
 }
 
