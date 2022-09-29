@@ -10,7 +10,7 @@ class FamilyService implements IFamilyService {
   public constructor(@inject(REPOSITORY_SYMBOLS.IFamilyRepository) private familyRepository: IFamilyRepository) {}
 
   public async getFamily(familyId: number): Promise<Family> {
-    return this.familyRepository.findById(familyId);
+    return await this.familyRepository.findById(familyId);
   }
 }
 

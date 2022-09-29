@@ -63,11 +63,8 @@ class InvitesController {
     try {
       const { query } = req;
 
-      console.log('hi');
       const invite = await this._authService.verifyInviteToken(query.token as string);
-      console.log('hi');
       const family = await this._familyService.getFamily(invite.familyId);
-      console.log('hi');
 
       res.status(200).json({
         ...invite,
