@@ -35,6 +35,7 @@ class AuthController {
         message: 'Login successful',
       });
     } catch (err) {
+      console.error(err);
       if (err instanceof InvalidDataError) {
         res.status(err.code).json({ message: 'Email or password is incorrect' });
       }
@@ -69,7 +70,7 @@ class AuthController {
     } catch (err) {
       res.status(500).send(err);
     }
-  }
+  };
 }
 
 export default AuthController;
