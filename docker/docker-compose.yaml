@@ -12,13 +12,12 @@ services:
     environment:
       - MONGO_DB=mongodb://mongo:27017/voting
       - JWT_SECRET=obligatorioarquitectura2022m8arodriguezsottosecinaro
-      # - LOG_FILE_PATH=/var/log/log.txt
     volumes:
-      # - './dockercompose/familyCosts/:/var/log'
       - '../:/usr/src/app'
     command: npm run dev
     depends_on:
-      - mysql 
+      - mysql
+      - redis
 
   mysql:
     container_name: mysql
@@ -36,7 +35,7 @@ services:
       - ./dockercompose/mysql:/var/lib/mysql
     networks:
       - sa-network
-      
+
   mysqlshadow:
     container_name: mysqlshadow
     command: --default-authentication-plugin=mysql_native_password
@@ -51,6 +50,14 @@ services:
       - '127.0.0.1:3307:3306'
     volumes:
       - ./dockercompose/mysqlshadow:/var/lib/mysql
+    networks:
+      - sa-network
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    ports:
+      - '6379:6379'
     networks:
       - sa-network
 
