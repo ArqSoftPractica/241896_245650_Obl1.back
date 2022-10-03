@@ -5,6 +5,7 @@ import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import helmet from 'helmet';
+import compression from 'compression';
 import log4js from 'log4js';
 import UsersController from 'controllers/UsersController';
 import { IUsersService } from 'serviceTypes/IUsersService';
@@ -56,6 +57,12 @@ app.use(
         logger.error(msg);
       },
     },
+  }),
+);
+
+app.use(
+  compression({
+    level: 9,
   }),
 );
 
