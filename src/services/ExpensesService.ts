@@ -20,7 +20,7 @@ class ExpensesService implements IExpensesService {
     @inject(REPOSITORY_SYMBOLS.ICategoriesRepository) private categoriesRepository: ICategoryRepository,
   ) {}
 
-  private async checkCategoryIsInFamily(categoryId: number, familyId: number): Promise<boolean> {
+  private async checkCategoryExistsAndIsInFamily(categoryId: number, familyId: number): Promise<boolean> {
     const category = await this.categoriesRepository.findById(categoryId);
 
     const isNotCategoryInFamily = !category || category.familyId !== familyId;
@@ -41,7 +41,7 @@ class ExpensesService implements IExpensesService {
     const { body } = requestData;
     const { amount, date, categoryId, description } = body;
 
-    await this.checkCategoryIsInFamily(categoryId, user.familyId);
+    await this.checkCategoryExistsAndIsInFamily(categoryId, user.familyId);
 
     return await this.expensesRepository.createExpense({
       amount,
@@ -58,12 +58,13 @@ class ExpensesService implements IExpensesService {
     });
   }
 
-  public async updateExpense(requestData: UpdateExpenseRequest, user: User): Promise<Expense> {
+  public async updateExpense(requestData: UpdateExpenseRequest, user: User): Promise<void> {
     const { body, params } = requestData;
     const { expenseId } = params;
     const { amount, date, categoryId, description } = body;
 
     await this.checkExpenseIsInFamily(expenseId, user.familyId);
+    categoryId && (await this.checkCategoryExistsAndIsInFamily(categoryId, user.familyId));
 
     const newValues = {
       amount,
@@ -78,7 +79,7 @@ class ExpensesService implements IExpensesService {
         : undefined,
     };
 
-    return await this.expensesRepository.updateExpense(expenseId, newValues);
+    await this.expensesRepository.updateExpense(expenseId, newValues);
   }
 
   public async deleteExpense(expenseId: number, user: User): Promise<Expense> {

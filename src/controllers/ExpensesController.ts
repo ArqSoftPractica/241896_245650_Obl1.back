@@ -103,10 +103,6 @@ class ExpensesController {
       });
     } catch (err) {
       console.error(err);
-      if (err instanceof Error) {
-        res.status(500).json({ message: err.message });
-        return;
-      }
       if (err instanceof ResourceNotFoundError) {
         res.status(404).json({ message: err.message });
         return;
@@ -175,6 +171,7 @@ class ExpensesController {
   public getExpensesPerCategory = async (req: Request, res: Response) => {
     try {
       const expensesPerCategory = await this._expensesService.getExpensesPerCategory(req);
+
       res.status(200).json({
         message: 'Expenses per category fetched successfully',
         expensesPerCategory,

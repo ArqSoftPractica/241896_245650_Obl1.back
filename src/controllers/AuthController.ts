@@ -7,7 +7,6 @@ import { LoginRequestSchema } from 'models/requests/LoginRequest';
 import 'reflect-metadata';
 import IAuthService from 'serviceTypes/IAuthService';
 import { SERVICE_SYMBOLS } from '../serviceTypes/serviceSymbols';
-
 import { User } from '@prisma/client';
 import { requireScopedAuth } from 'middlewares/requiresAuth';
 
@@ -38,9 +37,10 @@ class AuthController {
       console.error(err);
       if (err instanceof InvalidDataError) {
         res.status(err.code).json({ message: 'Email or password is incorrect' });
+        return;
       }
 
-      res.status(500).send(err);
+      res.status(500).json({ message: 'Internal server error' });
     }
   };
 
@@ -54,7 +54,7 @@ class AuthController {
         message: 'Refresh successful',
       });
     } catch (err) {
-      res.status(500).send(err);
+      res.status(500).json({ message: 'Internal server error' });
     }
   };
 
@@ -68,7 +68,7 @@ class AuthController {
         message: 'Get successful',
       });
     } catch (err) {
-      res.status(500).send(err);
+      res.status(500).json({ message: 'Internal server error' });
     }
   };
 }

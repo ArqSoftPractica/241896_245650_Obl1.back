@@ -18,9 +18,9 @@ export const RegisterAdminRequestSchema = z.object({
         required_error: 'Email is required',
       })
       .email('Not a valid email'),
-    password: z.string().min(8),
-    name: z.string().min(1),
-    familyName: z.string().min(1).refine(familyNameIsUnique, {
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    name: z.string().min(1, 'Name is required'),
+    familyName: z.string().min(1, 'Family Name is required').refine(familyNameIsUnique, {
       message: 'Family name is already taken',
     }),
   }),
