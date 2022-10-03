@@ -59,9 +59,16 @@ class ExpensesRepository implements IExpensesRepository {
     return await client.expense.delete({ where: { id: expenseId } });
   }
 
-  public async getTotalExpenses(familyId: number): Promise<number> {
+  public async getTotalExpenses(from: Date, to: Date, familyId: number): Promise<number> {
     const expensesQuantity = await client.expense.count({
-      where: { category: { familyId: familyId }, deleted: null },
+      where: {
+        category: { familyId: familyId },
+        deleted: null,
+        date: {
+          gte: from ? new Date(from) : undefined,
+          lte: to ? new Date(to) : undefined,
+        },
+      },
     });
     return expensesQuantity;
   }

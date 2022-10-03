@@ -120,9 +120,12 @@ class ExpensesService implements IExpensesService {
     return expenses;
   }
 
-  public async getTotalExpenses(user: User): Promise<number> {
+  public async getTotalExpenses(requestData: GetExpensesRequest, user: User): Promise<number> {
     const { familyId } = user;
-    return await this.expensesRepository.getTotalExpenses(familyId);
+    const {
+      query: { from, to },
+    } = requestData;
+    return await this.expensesRepository.getTotalExpenses(from, to, familyId);
   }
 
   public async getExpense(expenseId: number, user: User): Promise<Expense | null> {

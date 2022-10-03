@@ -134,7 +134,7 @@ class ExpensesController {
       const { user, query } = req as Request & { user: User } & GetExpensesRequest;
 
       const expenses = this._expensesService.getExpenses({ query }, user);
-      const totalExpenses = this._expensesService.getTotalExpenses(user);
+      const totalExpenses = this._expensesService.getTotalExpenses({ query }, user);
 
       const [expensesData, totalExpensesData] = await Promise.all([expenses, totalExpenses]);
 
