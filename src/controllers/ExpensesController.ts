@@ -133,11 +133,15 @@ class ExpensesController {
     try {
       const { user, query } = req as Request & { user: User } & GetExpensesRequest;
 
-      const expenses = await this._expensesService.getExpenses({ query }, user);
+      const expenses = this._expensesService.getExpenses({ query }, user);
+      const totalExpenses = this._expensesService.getTotalExpenses({ query }, user);
+
+      const [expensesData, totalExpensesData] = await Promise.all([expenses, totalExpenses]);
 
       res.status(200).json({
         message: 'Expenses fetched successfully',
-        expenses,
+        expenses: expensesData,
+        totalExpenses: totalExpensesData,
       });
     } catch (err) {
       console.error(err);

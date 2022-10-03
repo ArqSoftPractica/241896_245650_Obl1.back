@@ -10,4 +10,5 @@ export interface ICategoriesService {
   getTop3CategoriesWithMoreExpenses(req: Request): Promise<Top3CategoryWithMoreExpenses[]>;
   getExpensesOfCategory(req: Request): Promise<ExpenseDTO[]>;
   getCategories(req: Request): Promise<CategoryDTO[]>;
+  getTotalCategories(req: Request): Promise<number>;
 }

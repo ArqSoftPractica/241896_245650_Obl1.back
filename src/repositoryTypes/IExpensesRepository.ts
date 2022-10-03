@@ -4,6 +4,7 @@ import { ExpensePerCategoryDTO } from 'models/responses/ExpensesPerCategoryDTO';
 
 export interface IExpensesRepository {
   findMany(params: Prisma.ExpenseFindManyArgs): Promise<ExpenseDTO[]>;
+  getTotalExpenses(from: Date | undefined, to: Date | undefined, familyId: number): Promise<number>;
   createExpense(expenseData: Prisma.ExpenseCreateInput): Promise<ExpenseDTO>;
   updateExpense(expenseId: number, newValues: Prisma.ExpenseUpdateInput): Promise<void>;
   deleteExpense(expenseId: number): Promise<Expense>;

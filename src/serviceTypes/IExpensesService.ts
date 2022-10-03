@@ -8,6 +8,7 @@ import { ExpensePerCategoryDTO } from 'models/responses/ExpensesPerCategoryDTO';
 
 export interface IExpensesService {
   getExpenses(requestData: GetExpensesRequest, user: User): Promise<ExpenseDTO[]>;
+  getTotalExpenses(requestData: GetExpensesRequest, user: User): Promise<number>;
   getExpensesPerCategory(requestData: Request): Promise<ExpensePerCategoryDTO[]>;
   getExpense(expenseId: number, user: User): Promise<Expense | null>;
   createExpense(requestData: CreateExpenseRequest, user: User): Promise<ExpenseDTO>;

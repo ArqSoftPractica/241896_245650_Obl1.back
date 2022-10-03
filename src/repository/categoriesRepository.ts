@@ -92,6 +92,11 @@ class CategoriesRepository implements ICategoryRepository {
     const categories = await client.category.findMany(params);
     return categories;
   }
+
+  public async getFamilyCategoriesQuantity(familyId: number): Promise<number> {
+    const categoriesQuantity = await client.category.count({ where: { familyId, deleted: null } });
+    return categoriesQuantity;
+  }
 }
 
 export default CategoriesRepository;
