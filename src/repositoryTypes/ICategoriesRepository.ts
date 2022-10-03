@@ -10,4 +10,5 @@ export interface ICategoryRepository {
   updateCategory(categoryId: number, newData: Prisma.CategoryCreateInput): Promise<void>;
   deleteCategory(categoryId: number): Promise<void>;
   findById(categoryId: number): Promise<Category | null>;
+  getFamilyCategoriesQuantity(familyId: number): Promise<number>;
 }

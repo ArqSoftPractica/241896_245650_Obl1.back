@@ -134,11 +134,15 @@ class CategoryController {
 
   public getCategories = async (req: Request, res: Response) => {
     try {
-      const categories = await this._categoriesService.getCategories(req);
+      const categories = this._categoriesService.getCategories(req);
+      const totalCategories = this._categoriesService.getTotalCategories(req);
+
+      const [categoriesResult, totalCategoriesResult] = await Promise.all([categories, totalCategories]);
 
       res.status(200).json({
         message: 'Categories fetched successfully',
-        categories,
+        categoriesResult,
+        totalCategories: totalCategoriesResult,
       });
     } catch (err) {
       console.error(err);

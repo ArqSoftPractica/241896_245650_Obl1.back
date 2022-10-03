@@ -149,6 +149,16 @@ class CategoriesService implements ICategoriesService {
 
     return categories;
   }
+
+  public async getTotalCategories(req: AuthRequest): Promise<number> {
+    const {
+      user: { familyId },
+    } = req;
+
+    const totalCategories = await this.categoriesRepository.getFamilyCategoriesQuantity(familyId);
+
+    return totalCategories;
+  }
 }
 
 export default CategoriesService;
