@@ -1,11 +1,12 @@
 import * as dotenv from 'dotenv';
 import myContainer from './factory/inversify.config';
 import { SERVICE_SYMBOLS } from './serviceTypes/serviceSymbols';
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
+import { createTerminus } from '@godaddy/terminus';
 import log4js from 'log4js';
 import UsersController from 'controllers/UsersController';
 import { IUsersService } from 'serviceTypes/IUsersService';
@@ -19,6 +20,8 @@ import { IExpensesService } from 'serviceTypes/IExpensesService';
 import ExpensesController from 'controllers/ExpensesController';
 
 import 'models/redisClient';
+import dbClient from 'models/client';
+import client from 'models/redisClient';
 
 dotenv.config();
 
@@ -69,6 +72,58 @@ app.use(
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
+  if (err) {
+    logger.error(err);
+    res.status(500).send('Something broke!');
+    return;
+  }
+  next();
+});
+
+const onSignal = () => {
+  console.log('server is starting cleanup');
+  return Promise.all([dbClient.$disconnect(), client.disconnect()]);
+};
+
+const onShutdown = () => {
+  console.log('cleanup finished, server is shutting down');
+  return Promise.resolve();
+};
+
+const healthCheck = async () => {
+  try {
+    const redisState = await client.ping();
+
+    const dbState: [] =
+      (await dbClient.$queryRaw`
+      SELECT 1
+    `) ?? [];
+
+    if (redisState === 'PONG' && dbState.length > 0) {
+      return {
+        status: 'ok',
+      };
+    }
+
+    return {
+      status: 'error',
+      details: {
+        redis: redisState === 'PONG' ? 'ok' : 'error',
+        db: dbState.length > 0 ? 'ok' : 'error',
+      },
+    };
+  } catch (error: any) {
+    return {
+      status: 'error',
+      details: {
+        redis: 'error',
+        db: 'error',
+        error: error.message,
+      },
+    };
+  }
+};
 
 const usersService = myContainer.get<IUsersService>(SERVICE_SYMBOLS.IUsersService);
 const usersController = new UsersController(usersService);
@@ -91,6 +146,20 @@ app.use('/api/v1', authController.authRouter);
 app.use('/api/v1', expensesController.expensesRouter);
 app.use('/api/v1', categoriesController.categoriesRouter);
 
-app.listen(PORT, () => {
+app.use(function (req, res, next) {
+  res.status(404);
+
+  res.redirect('/');
+});
+
+const server = app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}: http://localhost:${PORT}`);
+});
+
+createTerminus(server, {
+  healthChecks: {
+    '/': healthCheck,
+  },
+  onSignal,
+  onShutdown,
 });
