@@ -141,7 +141,7 @@ class CategoryController {
 
       res.status(200).json({
         message: 'Categories fetched successfully',
-        categoriesResult,
+        categories: categoriesResult,
         totalCategories: totalCategoriesResult,
       });
     } catch (err) {

@@ -120,6 +120,11 @@ class ExpensesService implements IExpensesService {
     return expenses;
   }
 
+  public async getTotalExpenses(user: User): Promise<number> {
+    const { familyId } = user;
+    return await this.expensesRepository.getTotalExpenses(familyId);
+  }
+
   public async getExpense(expenseId: number, user: User): Promise<Expense | null> {
     await this.checkExpenseIsInFamily(expenseId, user.familyId);
     const expense = await this.expensesRepository.findById(expenseId);
