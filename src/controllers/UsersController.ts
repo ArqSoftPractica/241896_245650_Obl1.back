@@ -1,3 +1,4 @@
+import { InvalidDataError } from 'errors/InvalidDataError';
 import express from 'express';
 import { Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
@@ -28,6 +29,12 @@ class UsersController {
         message: 'Admin registered successfully',
       });
     } catch (err) {
+      if (err instanceof InvalidDataError) {
+        res.status(err.code).json({
+          message: err.message,
+        });
+        return;
+      }
       res.status(500).json({ message: 'Internal server error' });
     }
   };

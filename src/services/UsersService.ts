@@ -27,6 +27,7 @@ class UsersService implements IUsersService {
     const { email, password, name, invitationToken } = body;
 
     const inviteToken = await this.authService.verifyInviteToken(invitationToken);
+    await this.checkUserIsNotAlreadyRegistered(email);
     const { role, familyId } = inviteToken;
 
     const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');

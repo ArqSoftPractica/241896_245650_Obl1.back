@@ -5,7 +5,7 @@ import { ExpensePerCategoryDTO } from 'models/responses/ExpensesPerCategoryDTO';
 export interface IExpensesRepository {
   findMany(params: Prisma.ExpenseFindManyArgs): Promise<ExpenseDTO[]>;
   createExpense(expenseData: Prisma.ExpenseCreateInput): Promise<ExpenseDTO>;
-  updateExpense(expenseId: number, newValues: Prisma.ExpenseUpdateInput): Promise<Expense>;
+  updateExpense(expenseId: number, newValues: Prisma.ExpenseUpdateInput): Promise<void>;
   deleteExpense(expenseId: number): Promise<Expense>;
   findById(id: number): Promise<Expense | null>;
   isExpenseInFamily(expenseId: number, familyId: number): Promise<boolean>;

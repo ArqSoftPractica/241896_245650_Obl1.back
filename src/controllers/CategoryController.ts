@@ -51,7 +51,7 @@ class CategoryController {
     );
     this.categoriesRouter.get(
       this.path,
-      requireScopedAuth('admin'),
+      requireScopedAuth('admin', 'user'),
       validate(GetCategoriesRequestSchema),
       this.getCategories,
     );

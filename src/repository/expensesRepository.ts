@@ -26,8 +26,29 @@ class ExpensesRepository implements IExpensesRepository {
     });
   }
 
-  public async updateExpense(expenseId: number, newValues: Prisma.ExpenseUpdateInput): Promise<Expense> {
-    return await client.expense.update({ where: { id: expenseId }, data: newValues });
+  public async updateExpense(expenseId: number, newValues: Prisma.ExpenseUpdateInput): Promise<void> {
+    const { category } = newValues;
+    category
+      ? await this.updateExpenseWithCategory(expenseId, newValues)
+      : await this.updateExpenseWithoutCategory(expenseId, newValues);
+  }
+
+  private async updateExpenseWithoutCategory(expenseId: number, newValues: Prisma.ExpenseUpdateInput): Promise<void> {
+    const { amount, date, description } = newValues;
+    await client.$executeRaw`
+      UPDATE Expense
+      SET amount = ${amount}, date = ${date}, description = ${description}
+      WHERE id = ${expenseId}
+    `;
+  }
+
+  private async updateExpenseWithCategory(expenseId: number, newValues: Prisma.ExpenseUpdateInput): Promise<void> {
+    const { amount, date, description, category } = newValues;
+    await client.$executeRaw`
+      UPDATE Expense
+      SET amount = ${amount}, date = ${date}, description = ${description}, categoryId = ${category?.connect?.id}
+      WHERE id = ${expenseId}
+    `;
   }
 
   public async findById(id: number): Promise<Expense | null> {

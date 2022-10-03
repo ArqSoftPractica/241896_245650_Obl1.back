@@ -1,4 +1,5 @@
 import { User } from '@prisma/client';
+import { InvalidDataError } from 'errors/InvalidDataError';
 import express from 'express';
 import { Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
@@ -37,12 +38,11 @@ class InvitesController {
       const { body, user } = req as Request & { user: User };
       await this._usersService.inviteUser({ body }, user);
 
-      const { email } = body;
       res.status(201).json({
-        message: `An invitation has been sent to the email address provided. (${email})`,
+        message: `Invite sent successfully`,
       });
     } catch (err) {
-      res.status(500).send(err);
+      res.status(500).json({ message: 'Internal server error' });
     }
   };
 
@@ -55,7 +55,13 @@ class InvitesController {
         message: `Your account has been created.`,
       });
     } catch (err) {
-      res.status(500).send(err);
+      if (err instanceof InvalidDataError) {
+        res.status(err.code).json({
+          message: err.message,
+        });
+        return;
+      }
+      res.status(500).json({ message: 'Internal server error' });
     }
   };
 
@@ -67,10 +73,13 @@ class InvitesController {
       const family = await this._familyService.getFamily(invite.familyId);
 
       res.status(200).json({
-        ...invite,
-        family: {
-          name: family.name,
-          id: family.id,
+        message: `Invite found successfully`,
+        invite: {
+          ...invite,
+          family: {
+            name: family.name,
+            id: family.id,
+          },
         },
       });
     } catch (err) {

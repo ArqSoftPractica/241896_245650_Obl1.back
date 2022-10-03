@@ -9,6 +9,6 @@ export const validate = (schema: AnyZodObject) => async (req: Request, res: Resp
   }
 
   return res.status(400).json({
-    ...data.error,
+    message: data.error.errors[0].message,
   });
 };

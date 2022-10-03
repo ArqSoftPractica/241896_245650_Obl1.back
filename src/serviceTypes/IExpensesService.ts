@@ -11,6 +11,6 @@ export interface IExpensesService {
   getExpensesPerCategory(requestData: Request): Promise<ExpensePerCategoryDTO[]>;
   getExpense(expenseId: number, user: User): Promise<Expense | null>;
   createExpense(requestData: CreateExpenseRequest, user: User): Promise<ExpenseDTO>;
-  updateExpense(requestData: UpdateExpenseRequest, user: User): Promise<Expense>;
+  updateExpense(requestData: UpdateExpenseRequest, user: User): Promise<void>;
   deleteExpense(expenseId: number, user: User): Promise<Expense>;
 }
