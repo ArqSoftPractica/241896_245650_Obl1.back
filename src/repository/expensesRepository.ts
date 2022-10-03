@@ -5,6 +5,7 @@ import 'reflect-metadata';
 import { IExpensesRepository } from 'repositoryTypes/IExpensesRepository';
 import { ExpenseDTO } from 'models/responses/ExpenseDTO';
 import { ExpensePerCategoryDTO } from 'models/responses/ExpensesPerCategoryDTO';
+import redisClient from 'models/redisClient';
 
 @injectable()
 class ExpensesRepository implements IExpensesRepository {
@@ -88,7 +89,30 @@ class ExpensesRepository implements IExpensesRepository {
   }
 
   public async findMany(params: Prisma.ExpenseFindManyArgs): Promise<ExpenseDTO[]> {
-    return await client.expense.findMany(params);
+    const { where, skip, take } = params;
+    const { gte, lte } = this.getLteGteFromWhereQuery(where);
+
+    const cacheKey = `expenses-${where?.categoryId}-${gte}-${lte}-${skip}-${take}`;
+
+    const cached = await redisClient.get(cacheKey);
+
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
+    const expenses = await client.expense.findMany(params);
+
+    await redisClient.set(cacheKey, JSON.stringify(expenses), {
+      EX: 60 * 3,
+    });
+
+    return expenses;
+  }
+
+  private getLteGteFromWhereQuery(where: Prisma.ExpenseWhereInput | undefined) {
+    const gte = typeof where?.date == 'string' || where?.date instanceof Date ? where.date : where?.date?.gte;
+    const lte = typeof where?.date == 'string' || where?.date instanceof Date ? where.date : where?.date?.lte;
+    return { gte, lte };
   }
 
   public async getExpensesPerCategory(
@@ -96,14 +120,20 @@ class ExpensesRepository implements IExpensesRepository {
     from: Date | undefined,
     to: Date | undefined,
   ): Promise<ExpensePerCategoryDTO[]> {
+    const cacheKey = `expensesPerCategory-${familyId}-${from}-${to}`;
+    const cached = await redisClient.get(cacheKey);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
     const expensesPerCategory: ExpensePerCategoryDTO[] = await client.$queryRaw`
       SELECT
         category.id,
         category.name,
         SUM(expense.amount) AS totalAmount
       FROM
-        expense
-      INNER JOIN category ON expense.categoryId = category.id
+        Expense as expense
+      INNER JOIN Category as category ON expense.categoryId = category.id
       WHERE
         category.familyId = ${familyId}
         AND category.deleted IS NULL
@@ -113,6 +143,11 @@ class ExpensesRepository implements IExpensesRepository {
       GROUP BY
         category.id
     `;
+
+    await redisClient.set(cacheKey, JSON.stringify(expensesPerCategory), {
+      EX: 60 * 3,
+    });
+
     return expensesPerCategory;
   }
 }
