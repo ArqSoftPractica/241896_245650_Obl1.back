@@ -17,6 +17,8 @@ import CategoryController from 'controllers/CategoryController';
 import { IExpensesService } from 'serviceTypes/IExpensesService';
 import ExpensesController from 'controllers/ExpensesController';
 
+import 'models/redisClient';
+
 dotenv.config();
 
 log4js.configure({

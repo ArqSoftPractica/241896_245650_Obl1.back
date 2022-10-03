@@ -5,6 +5,7 @@ import 'reflect-metadata';
 import { ICategoryRepository } from 'repositoryTypes/ICategoriesRepository';
 import { CategoryDTO } from 'models/responses/CategoryDTO';
 import { Top3CategoryWithMoreExpenses } from 'models/responses/Top3CategoryWithMoreExpenses';
+import redisClient from 'models/redisClient';
 
 @injectable()
 class CategoriesRepository implements ICategoryRepository {
@@ -53,14 +54,22 @@ class CategoriesRepository implements ICategoryRepository {
   }
 
   public async getTop3CategoriesWithMoreExpenses(familyId: number): Promise<Top3CategoryWithMoreExpenses[]> {
+    const cacheKey = `top3CategoriesWithMoreExpenses-${familyId}`;
+
+    const cached = await redisClient.get(cacheKey);
+
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
     const top3CategoriesWithMoreExpenses: Top3CategoryWithMoreExpenses[] = await client.$queryRaw`
       SELECT
         category.name,
         category.id,
         SUM(expense.amount) AS totalAmount
       FROM
-        expense
-      INNER JOIN category ON expense.categoryId = category.id
+        Expense as expense
+      INNER JOIN Category as category ON expense.categoryId = category.id
       WHERE
         category.familyId = ${familyId}
         AND expense.deleted IS NULL
@@ -71,6 +80,11 @@ class CategoriesRepository implements ICategoryRepository {
         totalAmount DESC
       LIMIT 3
     `;
+
+    await redisClient.set(cacheKey, JSON.stringify(top3CategoriesWithMoreExpenses), {
+      EX: 3 * 60,
+    });
+
     return top3CategoriesWithMoreExpenses;
   }
 
