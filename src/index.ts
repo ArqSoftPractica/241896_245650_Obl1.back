@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv';
 import myContainer from './factory/inversify.config';
 import { SERVICE_SYMBOLS } from './serviceTypes/serviceSymbols';
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -72,8 +72,15 @@ app.use(
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
+  if (err) {
+    logger.error(err);
+    res.status(500).send('Something broke!');
+    return;
+  }
+  next();
+});
 
-//configure Terminus
 const onSignal = () => {
   console.log('server is starting cleanup');
   return Promise.all([dbClient.$disconnect(), client.disconnect()]);
@@ -138,6 +145,12 @@ app.use('/api/v1', invitesController.invitesRouter);
 app.use('/api/v1', authController.authRouter);
 app.use('/api/v1', expensesController.expensesRouter);
 app.use('/api/v1', categoriesController.categoriesRouter);
+
+app.use(function (req, res, next) {
+  res.status(404);
+
+  res.redirect('/');
+});
 
 const server = app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}: http://localhost:${PORT}`);
