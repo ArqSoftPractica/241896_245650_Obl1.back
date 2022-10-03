@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
+import { createTerminus } from '@godaddy/terminus';
 import log4js from 'log4js';
 import UsersController from 'controllers/UsersController';
 import { IUsersService } from 'serviceTypes/IUsersService';
@@ -19,6 +20,8 @@ import { IExpensesService } from 'serviceTypes/IExpensesService';
 import ExpensesController from 'controllers/ExpensesController';
 
 import 'models/redisClient';
+import dbClient from 'models/client';
+import client from 'models/redisClient';
 
 dotenv.config();
 
@@ -70,6 +73,51 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
+//configure Terminus
+const onSignal = () => {
+  console.log('server is starting cleanup');
+  return Promise.all([dbClient.$disconnect(), client.disconnect()]);
+};
+
+const onShutdown = () => {
+  console.log('cleanup finished, server is shutting down');
+  return Promise.resolve();
+};
+
+const healthCheck = async () => {
+  try {
+    const redisState = await client.ping();
+
+    const dbState: [] =
+      (await dbClient.$queryRaw`
+      SELECT 1
+    `) ?? [];
+
+    if (redisState === 'PONG' && dbState.length > 0) {
+      return {
+        status: 'ok',
+      };
+    }
+
+    return {
+      status: 'error',
+      details: {
+        redis: redisState === 'PONG' ? 'ok' : 'error',
+        db: dbState.length > 0 ? 'ok' : 'error',
+      },
+    };
+  } catch (error: any) {
+    return {
+      status: 'error',
+      details: {
+        redis: 'error',
+        db: 'error',
+        error: error.message,
+      },
+    };
+  }
+};
+
 const usersService = myContainer.get<IUsersService>(SERVICE_SYMBOLS.IUsersService);
 const usersController = new UsersController(usersService);
 
@@ -91,6 +139,14 @@ app.use('/api/v1', authController.authRouter);
 app.use('/api/v1', expensesController.expensesRouter);
 app.use('/api/v1', categoriesController.categoriesRouter);
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}: http://localhost:${PORT}`);
+});
+
+createTerminus(server, {
+  healthChecks: {
+    '/': healthCheck,
+  },
+  onSignal,
+  onShutdown,
 });
