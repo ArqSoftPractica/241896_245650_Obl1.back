@@ -97,7 +97,7 @@ class CategoriesService implements ICategoriesService {
 
     await this.checkCategoryIsInFamily(+categoryId, familyId);
 
-    const expenses = await this.expensesRepository.findMany({
+    const expenses = await this.expensesRepository.getExpensesOfOneCategory({
       where: {
         date: {
           gte: from ? new Date(from) : undefined,

@@ -89,6 +89,11 @@ class ExpensesRepository implements IExpensesRepository {
   }
 
   public async findMany(params: Prisma.ExpenseFindManyArgs): Promise<ExpenseDTO[]> {
+    const expenses = await client.expense.findMany(params);
+    return expenses;
+  }
+
+  public async getExpensesOfOneCategory(params: Prisma.ExpenseFindManyArgs): Promise<ExpenseDTO[]> {
     const { where, skip, take } = params;
     const { gte, lte } = this.getLteGteFromWhereQuery(where);
 
@@ -120,12 +125,6 @@ class ExpensesRepository implements IExpensesRepository {
     from: Date | undefined,
     to: Date | undefined,
   ): Promise<ExpensePerCategoryDTO[]> {
-    const cacheKey = `expensesPerCategory-${familyId}-${from}-${to}`;
-    const cached = await redisClient.get(cacheKey);
-    if (cached) {
-      return JSON.parse(cached);
-    }
-
     const expensesPerCategory: ExpensePerCategoryDTO[] = await client.$queryRaw`
       SELECT
         category.id,
@@ -143,10 +142,6 @@ class ExpensesRepository implements IExpensesRepository {
       GROUP BY
         category.id
     `;
-
-    await redisClient.set(cacheKey, JSON.stringify(expensesPerCategory), {
-      EX: 60 * 3,
-    });
 
     return expensesPerCategory;
   }
