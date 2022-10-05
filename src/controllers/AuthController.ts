@@ -23,6 +23,7 @@ class AuthController {
     this.authRouter.post(this.path + '/login', validate(LoginRequestSchema), this.login);
     this.authRouter.put(this.path + '/api-key', requireScopedAuth('admin'), this.refreshApiKey);
     this.authRouter.get(this.path + '/api-key', requireScopedAuth('admin', 'user'), this.getApiKey);
+    this.authRouter.get(this.path + '/users', requireScopedAuth('admin', 'user'), this.getUser);
   }
 
   public login = async (req: Request, res: Response) => {
@@ -68,6 +69,25 @@ class AuthController {
         message: 'Get successful',
       });
     } catch (err) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
+  public getUser = async (req: Request, res: Response) => {
+    try {
+      const {
+        user: { email, name, role },
+      } = req as Request & { user: User };
+      res.status(200).json({
+        user: {
+          email: email,
+          name: name,
+          role: role,
+        },
+        message: 'Role fetched successful',
+      });
+    } catch (err) {
+      console.error(err);
       res.status(500).json({ message: 'Internal server error' });
     }
   };
