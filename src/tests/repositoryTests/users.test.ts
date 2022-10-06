@@ -59,15 +59,15 @@ it('Get User by email', async () => {
     },
   };
 
-  const newUser = await prisma.user.create({
+  await prisma.user.create({
     data: user,
   });
 
   const usersRepo = new UsersRepository();
   const userFetched = await usersRepo.getUserByEmail(user.email);
 
-  expect(newUser?.email).toEqual(user.email);
-  expect(newUser?.name).toEqual(user.name);
-  expect(newUser?.password).toEqual(user.password);
-  expect(newUser?.role).toEqual(user.role);
+  expect(userFetched?.email).toEqual(user.email);
+  expect(userFetched?.name).toEqual(user.name);
+  expect(userFetched?.password).toEqual(user.password);
+  expect(userFetched?.role).toEqual(user.role);
 });
