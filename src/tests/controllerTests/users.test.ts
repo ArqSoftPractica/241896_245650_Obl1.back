@@ -1,7 +1,5 @@
 import UsersController from 'controllers/UsersController';
 import { IUsersService } from 'serviceTypes/IUsersService';
-
-
 import { getMockReq, getMockRes } from '@jest-mock/express';
 import { InvalidDataError } from 'errors/InvalidDataError';
 
@@ -10,7 +8,7 @@ describe('Register new administrator', () => {
     const { res } = getMockRes();
     const req = getMockReq({
       body: {
-        email: '',
+        email: 'john@gmail.com',
         password: '123456',
         name: 'John',
         familyName: 'Doe',

@@ -54,6 +54,7 @@ class AuthController {
         message: 'Refresh successful',
       });
     } catch (err) {
+      console.error(err);
       res.status(500).json({ message: 'Internal server error' });
     }
   };
@@ -68,6 +69,7 @@ class AuthController {
         message: 'Get successful',
       });
     } catch (err) {
+      console.error(err);
       res.status(500).json({ message: 'Internal server error' });
     }
   };
