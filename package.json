@@ -75,7 +75,7 @@
       "prettier --write",
       "eslint --fix src/",
       "git add .",
-      "jest --bail --findRelatedTests"
+      "yarn test src/"
     ],
     "*.js": "eslint --cache --fix"
   }

@@ -163,5 +163,3 @@ createTerminus(server, {
   onSignal,
   onShutdown,
 });
-
-export default app;

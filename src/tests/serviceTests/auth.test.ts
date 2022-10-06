@@ -60,7 +60,7 @@ describe('Login', () => {
     const familyRepository = new mockFamilyRepo();
     const authService = new AuthService(usersRepository, familyRepository);
 
-    expect(() => authService.login(req)).rejects.toThrow(InvalidDataError);
+    await expect(() => authService.login(req)).rejects.toThrow(InvalidDataError);
     expect(usersRepository.getUserByEmail).toBeCalled();
   });
 });
