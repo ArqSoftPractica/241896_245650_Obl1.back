@@ -44,17 +44,23 @@ describe('Login', () => {
 
     const mockUsersRepo = jest.fn<IUsersRepository, []>(() => ({
       createUser: jest.fn().mockReturnValue(Promise.resolve()),
-      getUserByEmail: jest.fn().mockReturnValue(Promise.resolve(null)),
+      getUserByEmail: jest.fn().mockImplementation(() => Promise.resolve(null)),
     }));
 
-    const mockFamilyRepo = jest.fn<IFamilyRepository, []>();
+    const mockFamilyRepo = jest.fn<IFamilyRepository, []>(() => ({
+      createFamily: jest.fn().mockReturnValue(Promise.resolve()),
+      getFamilyById: jest.fn().mockImplementation(() => Promise.resolve(null)),
+      findByFamilyName: jest.fn().mockImplementation(() => Promise.resolve(null)),
+      updateFamily: jest.fn().mockReturnValue(Promise.resolve()),
+      getByApiKey: jest.fn().mockImplementation(() => Promise.resolve(null)),
+      findById: jest.fn().mockImplementation(() => Promise.resolve(null)),
+    }));
 
     const usersRepository = new mockUsersRepo();
     const familyRepository = new mockFamilyRepo();
     const authService = new AuthService(usersRepository, familyRepository);
-    await authService.login(req);
 
-    expect(usersRepository.getUserByEmail).toBeCalled();
     expect(() => authService.login(req)).rejects.toThrow(InvalidDataError);
+    expect(usersRepository.getUserByEmail).toBeCalled();
   });
 });
