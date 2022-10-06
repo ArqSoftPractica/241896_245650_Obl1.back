@@ -15,6 +15,8 @@ const EXPENSE_MODEL_NAME = 'Expense';
 // Middlewares for soft delete
 
 prisma.$use(async (params, next) => {
+  params = params ?? { args: {} };
+  params.args = params.args ?? {};
   const isModelWithSoftDelete = [CATEGORY_MODEL_NAME, EXPENSE_MODEL_NAME].includes(params.model ?? '');
 
   if (isModelWithSoftDelete) {
@@ -28,7 +30,7 @@ prisma.$use(async (params, next) => {
     }
     if (params.action === 'findMany') {
       // Find many queries
-      if (params.args.where) {
+      if (params?.args?.where) {
         if (params.args.where.deleted == undefined) {
           // Exclude deleted records if they have not been explicitly requested
           params.args.where['deleted'] = null;
@@ -42,6 +44,9 @@ prisma.$use(async (params, next) => {
 });
 
 prisma.$use(async (params, next) => {
+  params = params ?? { args: {} };
+  params.args = params.args ?? {};
+
   const isModelWithSoftDelete = [CATEGORY_MODEL_NAME, EXPENSE_MODEL_NAME].includes(params.model ?? '');
 
   if (isModelWithSoftDelete) {
@@ -58,7 +63,7 @@ prisma.$use(async (params, next) => {
     if (params.action == 'updateMany') {
       console.info(`Update query on ${params.model}:`);
       console.info(JSON.stringify(params.args, null, 2));
-      if (params.args.where != undefined) {
+      if (params?.args?.where != undefined) {
         params.args.where['deleted'] = null;
       } else {
         params.args['where'] = { deleted: null };
@@ -70,6 +75,8 @@ prisma.$use(async (params, next) => {
 
 prisma.$use(async (params, next) => {
   // Check incoming query type
+  params = params ?? { args: {} };
+  params.args = params.args ?? {};
   const isModelWithSoftDelete = [CATEGORY_MODEL_NAME, EXPENSE_MODEL_NAME].includes(params.model ?? '');
   if (isModelWithSoftDelete) {
     if (params.action == 'delete') {
@@ -85,7 +92,7 @@ prisma.$use(async (params, next) => {
       console.info(JSON.stringify(params.args, null, 2));
       // Delete many queries
       params.action = 'updateMany';
-      if (params.args.data != undefined) {
+      if (params?.args?.data != undefined) {
         params.args.data['deleted'] = true;
       } else {
         params.args['data'] = { deleted: new Date() };
@@ -97,6 +104,8 @@ prisma.$use(async (params, next) => {
 
 // Log create queries
 prisma.$use(async (params, next) => {
+  params = params ?? {};
+  params.args = params.args ?? {};
   const isModelWithSoftDelete = [CATEGORY_MODEL_NAME, EXPENSE_MODEL_NAME].includes(params.model ?? '');
   if (isModelWithSoftDelete) {
     if (params.action == 'create' || params.action == 'createMany') {

@@ -11,6 +11,7 @@ import { REPOSITORY_SYMBOLS } from 'repositoryTypes/repositorySymbols';
 import { IUsersRepository } from 'repositoryTypes/IUsersRepository';
 import { InvalidDataError } from 'errors/InvalidDataError';
 import { IFamilyRepository } from 'repositoryTypes/IFamilyRepository';
+import 'reflect-metadata';
 
 interface IDecodedToken {
   user: User;
@@ -23,7 +24,7 @@ export default class AuthService implements IAuthService {
   public constructor(
     @inject(REPOSITORY_SYMBOLS.IUsersRepository) private usersRepository: IUsersRepository,
     @inject(REPOSITORY_SYMBOLS.IFamilyRepository) private familyRepository: IFamilyRepository,
-  ) { }
+  ) {}
 
   public async getApiKey(familyId: number): Promise<string> {
     const family = await this.familyRepository.findById(familyId);
