@@ -150,3 +150,4 @@ dist
 
 docker/dockercompose/
 src/log.txt
+.env.test

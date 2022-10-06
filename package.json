@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "dotenv -e .env.test jest -i",
     "d:dev": "docker-compose -f docker/docker-compose.yaml up",
     "d:down": "docker-compose -f docker/docker-compose.yaml down",
     "dev": "export NODE_OPTIONS=\"--max-old-space-size=4096\" && NODE_PATH=./src ts-node-dev --poll --respawn --pretty --transpile-only src/index.ts",
@@ -60,6 +60,7 @@
     "@typescript-eslint/eslint-plugin": "^5.26.0",
     "@typescript-eslint/parser": "^5.26.0",
     "babel-jest": "^29.0.2",
+    "dotenv-cli": "^6.0.0",
     "eslint": "^8.16.0",
     "eslint-plugin-unused-imports": "^2.0.0",
     "husky": ">=6",

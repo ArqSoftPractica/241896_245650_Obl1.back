@@ -55,15 +55,18 @@ services:
 
   mysqltests:
     container_name: integration-tests-prisma
+    command: --default-authentication-plugin=mysql_native_password
     image: 'mysql/mysql-server:8.0'
     restart: always
     environment:
       MYSQL_DATABASE: 'tests'
       MYSQL_USER: 'prisma'
-      MYSQL_PASSWORD: 'prisma'
+      MYSQL_PASSWORD: 'password'
       MYSQL_ROOT_PASSWORD: 'password'
     ports:
       - '127.0.0.1:3308:3306'
+    networks:
+      - sa-network
 
   redis:
     container_name: redis
