@@ -22,6 +22,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-sqs": "^3.216.0",
     "@babel/plugin-proposal-decorators": "^7.19.3",
     "@godaddy/terminus": "^4.11.2",
     "@prisma/client": "4.3.1",
