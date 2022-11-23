@@ -10,7 +10,6 @@ import { IUsersRepository } from 'repositoryTypes/IUsersRepository';
 import IAuthService from 'serviceTypes/IAuthService';
 import AuthService from 'services/AuthService';
 import { IEmailService } from 'serviceTypes/IEmailService';
-import EmailService from 'services/EmailService';
 import { IFamilyService } from 'serviceTypes/IFamilyService';
 import FamilyService from 'services/FamilyService';
 import { ICategoriesService } from 'serviceTypes/ICategoriesService';
@@ -21,6 +20,7 @@ import { IExpensesRepository } from 'repositoryTypes/IExpensesRepository';
 import ExpensesRepository from 'repository/expensesRepository';
 import ExpensesService from 'services/ExpensesService';
 import { IExpensesService } from 'serviceTypes/IExpensesService';
+import MQEmailService from 'services/MQEmailService';
 
 const myContainer = new Container();
 myContainer.bind<IFamilyRepository>(REPOSITORY_SYMBOLS.IFamilyRepository).to(FamilyRepository);
@@ -30,7 +30,7 @@ myContainer.bind<IExpensesRepository>(REPOSITORY_SYMBOLS.IExpensesRepository).to
 
 myContainer.bind<IUsersService>(SERVICE_SYMBOLS.IUsersService).to(UsersService);
 myContainer.bind<IAuthService>(SERVICE_SYMBOLS.IAuthService).to(AuthService);
-myContainer.bind<IEmailService>(SERVICE_SYMBOLS.IEmailService).to(EmailService);
+myContainer.bind<IEmailService>(SERVICE_SYMBOLS.IEmailService).to(MQEmailService);
 myContainer.bind<IFamilyService>(SERVICE_SYMBOLS.IFamilyService).to(FamilyService);
 myContainer.bind<IExpensesService>(SERVICE_SYMBOLS.IExpensesService).to(ExpensesService);
 myContainer.bind<ICategoriesService>(SERVICE_SYMBOLS.ICategoriesService).to(CategoriesService);

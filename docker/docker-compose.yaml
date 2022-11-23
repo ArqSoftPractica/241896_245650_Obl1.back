@@ -59,8 +59,8 @@ services:
     image: 'mysql/mysql-server:8.0'
     restart: always
     environment:
-      MYSQL_DATABASE: 'tests'
-      MYSQL_USER: 'prisma'
+      MYSQL_DATABASE: 'db'
+      MYSQL_USER: 'user'
       MYSQL_PASSWORD: 'password'
       MYSQL_ROOT_PASSWORD: 'password'
     ports:
