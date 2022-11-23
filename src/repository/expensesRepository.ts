@@ -17,6 +17,7 @@ class ExpensesRepository implements IExpensesRepository {
         amount: true,
         date: true,
         description: true,
+        categoryId: true,
         category: {
           select: {
             id: true,
