@@ -58,7 +58,7 @@ class IncomesRepository implements IIncomesRepository {
     return await client.income.delete({ where: { id: incomeId } });
   }
 
-  public async getTotalIncomes(from: Date, to: Date, familyId: number): Promise<number> {
+  public async getTotalIncomes(from: string | undefined, to: string | undefined, familyId: number): Promise<number> {
     const incomesQuantity = await client.income.count({
       where: {
         category: { familyId: familyId },

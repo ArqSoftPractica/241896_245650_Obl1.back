@@ -61,13 +61,9 @@ class IncomesService implements IIncomesService {
       body: { amount, date, categoryId, description },
       params: { incomeId },
       user: { familyId },
-    } = request as AuthRequest & {
-      user: User;
-      params: { incomeId: number };
-      body: { amount: number; date: string; categoryId: number; description: string };
-    };
+    } = request;
 
-    await this.checkIncomeIsInFamily(incomeId, familyId);
+    await this.checkIncomeIsInFamily(+incomeId, familyId);
     categoryId && (await this.checkCategoryExistsAndIsInFamily(categoryId, familyId));
 
     const newValues = {
@@ -83,27 +79,24 @@ class IncomesService implements IIncomesService {
         : undefined,
     };
 
-    await this.incomesRepository.updateIncome(incomeId, newValues);
+    await this.incomesRepository.updateIncome(+incomeId, newValues);
   }
 
   public async deleteIncome(request: AuthRequest): Promise<Income> {
     const {
       params: { incomeId },
       user: { familyId },
-    } = request as AuthRequest & { user: User; params: { incomeId: number } };
+    } = request;
 
-    await this.checkIncomeIsInFamily(incomeId, familyId);
-    return await this.incomesRepository.deleteIncome(incomeId);
+    await this.checkIncomeIsInFamily(+incomeId, familyId);
+    return await this.incomesRepository.deleteIncome(+incomeId);
   }
 
   public async getIncomes(request: AuthRequest): Promise<IncomeDTO[]> {
     const {
       query: { from, to, skip, take },
       user: { familyId },
-    } = request as AuthRequest & {
-      user: User;
-      query: { from: string; to: string; skip: number; take: number };
-    };
+    } = request as AuthRequest & { user: User; query: { from: string; to: string; skip: number; take: number } };
 
     const incomes = await this.incomesRepository.findMany({
       where: {
@@ -138,17 +131,17 @@ class IncomesService implements IIncomesService {
     const {
       query: { from, to },
       user: { familyId },
-    } = request as AuthRequest & { user: User; query: { from: string; to: string } };
-    return await this.incomesRepository.getTotalIncomes(new Date(from), new Date(to), familyId);
+    } = request as AuthRequest & { user: User; query: { from: string | undefined; to: string | undefined } };
+    return await this.incomesRepository.getTotalIncomes(from, to, familyId);
   }
 
   public async getIncome(request: AuthRequest): Promise<Income | null> {
     const {
       params: { incomeId },
       user: { familyId },
-    } = request as AuthRequest & { user: User; params: { incomeId: number } };
-    await this.checkIncomeIsInFamily(incomeId, familyId);
-    const income = await this.incomesRepository.findById(incomeId);
+    } = request;
+    await this.checkIncomeIsInFamily(+incomeId, familyId);
+    const income = await this.incomesRepository.findById(+incomeId);
 
     if (!income) throw new ResourceNotFoundError('Income not found');
 
