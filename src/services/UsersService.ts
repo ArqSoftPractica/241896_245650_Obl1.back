@@ -4,7 +4,7 @@ import 'reflect-metadata';
 import { v4 as uuidv4 } from 'uuid';
 import { REPOSITORY_SYMBOLS } from '../repositoryTypes/repositorySymbols';
 import { IUsersService } from 'serviceTypes/IUsersService';
-import { RegisterAdminRequest } from 'models/requests/RegisterAdminRequest';
+import { RegisterAdminRequest } from 'models/requests/register/RegisterAdminRequest';
 import { IUsersRepository } from 'repositoryTypes/IUsersRepository';
 import { InviteUserRequest } from 'models/requests/InviteUserRequest';
 import { User } from '@prisma/client';

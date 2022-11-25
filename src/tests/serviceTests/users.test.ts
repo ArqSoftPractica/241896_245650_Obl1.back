@@ -1,5 +1,5 @@
 import { InvalidDataError } from 'errors/InvalidDataError';
-import { RegisterAdminRequest } from 'models/requests/RegisterAdminRequest';
+import { RegisterAdminRequest } from 'models/requests/register/RegisterAdminRequest';
 import { IUsersRepository } from 'repositoryTypes/IUsersRepository';
 import UsersService from 'services/UsersService';
 import IAuthService from 'serviceTypes/IAuthService';

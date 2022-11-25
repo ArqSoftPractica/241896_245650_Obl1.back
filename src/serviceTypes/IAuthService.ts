@@ -1,6 +1,6 @@
 import { Role, User } from '@prisma/client';
 import { InvitePayload } from 'models/InvitePayload';
-import { LoginRequest } from 'models/requests/LoginRequest';
+import { LoginRequest } from 'models/requests/auth/LoginRequest';
 
 export default interface IAuthService {
   createToken(user: User): Promise<string>;

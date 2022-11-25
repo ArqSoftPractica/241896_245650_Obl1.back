@@ -6,7 +6,7 @@ import { Role, User } from '@prisma/client';
 import IAuthService from 'serviceTypes/IAuthService';
 import { Optional } from 'helpers/Optional';
 import { InvitePayload } from 'models/InvitePayload';
-import { LoginRequest } from 'models/requests/LoginRequest';
+import { LoginRequest } from 'models/requests/auth/LoginRequest';
 import { REPOSITORY_SYMBOLS } from 'repositoryTypes/repositorySymbols';
 import { IUsersRepository } from 'repositoryTypes/IUsersRepository';
 import { InvalidDataError } from 'errors/InvalidDataError';
