@@ -29,6 +29,7 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   expenses  Expense[]
+  Income    Income[]
 }
 
 enum Role {
@@ -48,9 +49,24 @@ model Category {
   updatedAt            DateTime  @updatedAt
   deleted              DateTime?
   expenses             Expense[]
+  incomes              Income[]
 }
 
 model Expense {
+  id          Int       @id @default(autoincrement())
+  amount      Decimal
+  description String
+  date        DateTime
+  category    Category  @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deleted     DateTime?
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int
+}
+
+model Income {
   id          Int       @id @default(autoincrement())
   amount      Decimal
   description String

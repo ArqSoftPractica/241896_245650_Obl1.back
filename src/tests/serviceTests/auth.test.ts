@@ -1,6 +1,6 @@
 import { User } from '@prisma/client';
 import { InvalidDataError } from 'errors/InvalidDataError';
-import { LoginRequest } from 'models/requests/LoginRequest';
+import { LoginRequest } from 'models/requests/auth/LoginRequest';
 import { IFamilyRepository } from 'repositoryTypes/IFamilyRepository';
 import { IUsersRepository } from 'repositoryTypes/IUsersRepository';
 import AuthService from 'services/AuthService';

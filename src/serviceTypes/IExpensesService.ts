@@ -1,8 +1,8 @@
 import { Expense, User } from '@prisma/client';
 import { Request } from 'express';
-import { CreateExpenseRequest } from 'models/requests/CreateExpenseRequest';
-import { GetExpensesRequest } from 'models/requests/GetExpensesRequest';
-import { UpdateExpenseRequest } from 'models/requests/UpdateExpenseRequest';
+import { CreateExpenseRequest } from 'models/requests/expenses/CreateExpenseRequest';
+import { GetExpensesRequest } from 'models/requests/expenses/GetExpensesRequest';
+import { UpdateExpenseRequest } from 'models/requests/expenses/UpdateExpenseRequest';
 import { ExpenseDTO } from 'models/responses/ExpenseDTO';
 import { ExpensePerCategoryDTO } from 'models/responses/ExpensesPerCategoryDTO';
 

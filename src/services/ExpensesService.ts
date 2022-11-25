@@ -3,13 +3,13 @@ import 'reflect-metadata';
 import { REPOSITORY_SYMBOLS } from '../repositoryTypes/repositorySymbols';
 import { Expense, User } from '@prisma/client';
 import { IExpensesService } from 'serviceTypes/IExpensesService';
-import { CreateExpenseRequest } from 'models/requests/CreateExpenseRequest';
+import { CreateExpenseRequest } from 'models/requests/expenses/CreateExpenseRequest';
 import { IExpensesRepository } from 'repositoryTypes/IExpensesRepository';
-import { UpdateExpenseRequest } from 'models/requests/UpdateExpenseRequest';
+import { UpdateExpenseRequest } from 'models/requests/expenses/UpdateExpenseRequest';
 import { ResourceNotFoundError } from 'errors/ResourceNotFoundError';
 import { ICategoryRepository } from 'repositoryTypes/ICategoriesRepository';
 import { ExpenseDTO } from 'models/responses/ExpenseDTO';
-import { GetExpensesRequest } from 'models/requests/GetExpensesRequest';
+import { GetExpensesRequest } from 'models/requests/expenses/GetExpensesRequest';
 import { ExpensePerCategoryDTO } from 'models/responses/ExpensesPerCategoryDTO';
 import { AuthRequest } from 'middlewares/requiresAuth';
 
