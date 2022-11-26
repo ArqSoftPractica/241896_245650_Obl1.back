@@ -3,4 +3,5 @@ import { UpdateType } from './IEmailService';
 
 export interface ISubscriptionsService {
   createSubscription(user: User, categoryId: number, entity: UpdateType): Promise<void>;
+  deleteSubscription(user: User, subscriptionId: number): Promise<void>;
 }
