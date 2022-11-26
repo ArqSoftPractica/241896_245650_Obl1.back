@@ -11,6 +11,9 @@ class UsersRepository implements IUsersRepository {
       where: {
         email,
       },
+      include: {
+        subscriptions: true,
+      },
     });
   }
   public async createUser(userData: Prisma.UserCreateInput): Promise<User> {

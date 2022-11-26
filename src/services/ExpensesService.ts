@@ -12,6 +12,7 @@ import { ExpenseDTO } from 'models/responses/ExpenseDTO';
 import { GetExpensesRequest } from 'models/requests/expenses/GetExpensesRequest';
 import { ExpensePerCategoryDTO } from 'models/responses/ExpensesPerCategoryDTO';
 import { AuthRequest } from 'middlewares/requiresAuth';
+import { sendExpenseUpdateMiddleware } from 'helpers/sendExpenseUpdateMiddleware';
 
 @injectable()
 class ExpensesService implements IExpensesService {
@@ -43,7 +44,7 @@ class ExpensesService implements IExpensesService {
 
     await this.checkCategoryExistsAndIsInFamily(categoryId, user.familyId);
 
-    return await this.expensesRepository.createExpense({
+    const response = await this.expensesRepository.createExpense({
       amount,
       description,
       date: new Date(date),
@@ -56,6 +57,8 @@ class ExpensesService implements IExpensesService {
         connect: { id: user.id },
       },
     });
+
+    return await sendExpenseUpdateMiddleware(response, user, 'expense');
   }
 
   public async updateExpense(requestData: UpdateExpenseRequest, user: User): Promise<void> {

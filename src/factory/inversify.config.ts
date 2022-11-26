@@ -24,6 +24,10 @@ import MQEmailService from 'services/MQEmailService';
 import IncomesRepository from 'repository/incomesRepository';
 import { IIncomesService } from 'serviceTypes/IIncomesService';
 import IncomesService from 'services/IncomesService';
+import { ISubscriptionsService } from 'serviceTypes/ISubscriptionsService';
+import SubscriptionsService from 'services/SubscriptionsService';
+import ISubscriptionsRepository from 'repositoryTypes/ISubscriptionsrepository';
+import SubscriptionsRepository from 'repository/subscriptionsRepository';
 
 const myContainer = new Container();
 myContainer.bind<IFamilyRepository>(REPOSITORY_SYMBOLS.IFamilyRepository).to(FamilyRepository);
@@ -31,6 +35,7 @@ myContainer.bind<IUsersRepository>(REPOSITORY_SYMBOLS.IUsersRepository).to(Users
 myContainer.bind<ICategoryRepository>(REPOSITORY_SYMBOLS.ICategoriesRepository).to(CategoriesRepository);
 myContainer.bind<IExpensesRepository>(REPOSITORY_SYMBOLS.IExpensesRepository).to(ExpensesRepository);
 myContainer.bind<IncomesRepository>(REPOSITORY_SYMBOLS.IIncomesRepository).to(IncomesRepository);
+myContainer.bind<ISubscriptionsRepository>(REPOSITORY_SYMBOLS.ISubscriptionsRepository).to(SubscriptionsRepository);
 
 myContainer.bind<IUsersService>(SERVICE_SYMBOLS.IUsersService).to(UsersService);
 myContainer.bind<IAuthService>(SERVICE_SYMBOLS.IAuthService).to(AuthService);
@@ -39,5 +44,6 @@ myContainer.bind<IFamilyService>(SERVICE_SYMBOLS.IFamilyService).to(FamilyServic
 myContainer.bind<IExpensesService>(SERVICE_SYMBOLS.IExpensesService).to(ExpensesService);
 myContainer.bind<IIncomesService>(SERVICE_SYMBOLS.IIncomesService).to(IncomesService);
 myContainer.bind<ICategoriesService>(SERVICE_SYMBOLS.ICategoriesService).to(CategoriesService);
+myContainer.bind<ISubscriptionsService>(SERVICE_SYMBOLS.ISubscriptionsService).to(SubscriptionsService);
 
 export default myContainer;

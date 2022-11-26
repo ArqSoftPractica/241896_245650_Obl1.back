@@ -1,11 +1,14 @@
 import { injectable } from 'inversify';
 import 'reflect-metadata';
 
-import { IEmailService } from 'serviceTypes/IEmailService';
+import { IEmailService, UpdateType } from 'serviceTypes/IEmailService';
 import emailClient from 'helpers/EmailClient';
 
 @injectable()
 class EmailService implements IEmailService {
+  sendCategoryBalanceUpdateEmail(email: string, category: string, data: any, type: UpdateType): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
   private readonly FRONTEND_URL = process.env.FRONTEND_APP_URL ?? 'http://localhost:3000';
 
   private getInviteLink(token: string): string {

@@ -6,6 +6,7 @@ const SERVICE_SYMBOLS = {
   IExpensesService: Symbol.for('IExpensesService'),
   IIncomesService: Symbol.for('IIncomesService'),
   ICategoriesService: Symbol.for('ICategoriesService'),
+  ISubscriptionsService: Symbol.for('ISubscriptionsService'),
 };
 
 export { SERVICE_SYMBOLS };

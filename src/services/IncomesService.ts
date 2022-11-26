@@ -8,6 +8,7 @@ import { ICategoryRepository } from 'repositoryTypes/ICategoriesRepository';
 import { AuthRequest } from 'middlewares/requiresAuth';
 import { IncomeDTO } from 'models/responses/IncomeDTO';
 import { IIncomesRepository } from 'repositoryTypes/IIncomesRepository';
+import { sendExpenseUpdateMiddleware } from 'helpers/sendExpenseUpdateMiddleware';
 
 @injectable()
 class IncomesService implements IIncomesService {
@@ -41,7 +42,7 @@ class IncomesService implements IIncomesService {
 
     await this.checkCategoryExistsAndIsInFamily(categoryId, familyId);
 
-    return await this.incomesRepository.createIncome({
+    const response = await this.incomesRepository.createIncome({
       amount,
       description,
       date: new Date(date),
@@ -54,6 +55,7 @@ class IncomesService implements IIncomesService {
         connect: { id: userId },
       },
     });
+    return await sendExpenseUpdateMiddleware(response, request.user, 'income');
   }
 
   public async updateIncome(request: AuthRequest): Promise<void> {

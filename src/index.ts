@@ -24,6 +24,8 @@ import dbClient from 'models/client';
 import client from 'models/redisClient';
 import { IIncomesService } from 'serviceTypes/IIncomesService';
 import IncomesController from 'controllers/IncomesController';
+import { ISubscriptionsService } from 'serviceTypes/ISubscriptionsService';
+import SubscriptionsController from 'controllers/SubscriptionsController';
 
 dotenv.config();
 
@@ -145,12 +147,16 @@ const incomesController = new IncomesController(incomesService);
 const categoriesService = myContainer.get<ICategoriesService>(SERVICE_SYMBOLS.ICategoriesService);
 const categoriesController = new CategoryController(categoriesService);
 
+const subscriptionsService = myContainer.get<ISubscriptionsService>(SERVICE_SYMBOLS.ISubscriptionsService);
+const subscriptionsController = new SubscriptionsController(subscriptionsService);
+
 app.use('/api/v1', usersController.usersRouter);
 app.use('/api/v1', invitesController.invitesRouter);
 app.use('/api/v1', authController.authRouter);
 app.use('/api/v1', expensesController.expensesRouter);
 app.use('/api/v1', incomesController.incomesRouter);
 app.use('/api/v1', categoriesController.categoriesRouter);
+app.use('/api/v1', subscriptionsController.subscriptionsRouter);
 
 app.use(function (req, res, next) {
   res.status(404);

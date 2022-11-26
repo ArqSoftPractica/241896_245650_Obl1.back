@@ -4,6 +4,7 @@ const REPOSITORY_SYMBOLS = {
   IExpensesRepository: Symbol.for('IExpensesRepository'),
   IIncomesRepository: Symbol.for('IIncomesRepository'),
   ICategoriesRepository: Symbol.for('ICategoriesRepository'),
+  ISubscriptionsRepository: Symbol.for('ISubscriptionsRepository'),
 };
 
 export { REPOSITORY_SYMBOLS };
