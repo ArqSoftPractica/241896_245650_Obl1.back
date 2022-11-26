@@ -38,8 +38,8 @@ class SubscriptionsController {
   public createSubscription = async (req: Request, res: Response) => {
     try {
       const { body, user } = req as AuthRequest;
-      const { categoryId, entity } = body;
-      await this._subscriptionsService.createSubscription(user, categoryId, entity);
+      const { categoryId } = body;
+      await this._subscriptionsService.createSubscription(user, categoryId);
 
       res.status(201).json({
         message: 'Subscription created successfully',

@@ -2,7 +2,6 @@ import { injectable, inject } from 'inversify';
 import 'reflect-metadata';
 import { REPOSITORY_SYMBOLS } from '../repositoryTypes/repositorySymbols';
 import { User } from '@prisma/client';
-import { UpdateType } from 'serviceTypes/IEmailService';
 import { ISubscriptionsService } from 'serviceTypes/ISubscriptionsService';
 import ISubscriptionsRepository from 'repositoryTypes/ISubscriptionsrepository';
 import { ResourceNotFoundError } from 'errors/ResourceNotFoundError';
@@ -15,9 +14,9 @@ class SubscriptionsService implements ISubscriptionsService {
     @inject(REPOSITORY_SYMBOLS.ICategoriesRepository) private categoriesRepository: ICategoryRepository,
   ) {}
 
-  public async createSubscription(user: User, categoryId: number, entity: UpdateType): Promise<void> {
+  public async createSubscription(user: User, categoryId: number): Promise<void> {
     await this.checkCategoryIsInFamily(+categoryId, user.familyId);
-    await this.subscriptionsRepository.createSubscription(user.id, categoryId, entity);
+    await this.subscriptionsRepository.createSubscription(user.id, categoryId);
   }
 
   private async checkCategoryIsInFamily(categoryId: number, familyId: number): Promise<void> {
