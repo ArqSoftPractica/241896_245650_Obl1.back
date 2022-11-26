@@ -1,7 +1,7 @@
 import { User } from '@prisma/client';
-import { InviteUserRequest } from 'models/requests/InviteUserRequest';
-import { RegisterAdminRequest } from 'models/requests/RegisterAdminRequest';
-import { RegisterRequest } from 'models/requests/RegisterRequest';
+import { InviteUserRequest } from 'models/requests/invites/InviteUserRequest';
+import { RegisterAdminRequest } from 'models/requests/register/RegisterAdminRequest';
+import { RegisterRequest } from 'models/requests/register/RegisterRequest';
 
 export interface IUsersService {
   registerAdmin(requestData: RegisterAdminRequest): Promise<void>;

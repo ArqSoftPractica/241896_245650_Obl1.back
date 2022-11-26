@@ -22,6 +22,8 @@ import ExpensesController from 'controllers/ExpensesController';
 import 'models/redisClient';
 import dbClient from 'models/client';
 import client from 'models/redisClient';
+import { IIncomesService } from 'serviceTypes/IIncomesService';
+import IncomesController from 'controllers/IncomesController';
 import { ISubscriptionsService } from 'serviceTypes/ISubscriptionsService';
 import SubscriptionsController from 'controllers/SubscriptionsController';
 
@@ -139,6 +141,9 @@ const invitesController = new InvitesController(usersService, authService, famil
 const expensesService = myContainer.get<IExpensesService>(SERVICE_SYMBOLS.IExpensesService);
 const expensesController = new ExpensesController(expensesService);
 
+const incomesService = myContainer.get<IIncomesService>(SERVICE_SYMBOLS.IIncomesService);
+const incomesController = new IncomesController(incomesService);
+
 const categoriesService = myContainer.get<ICategoriesService>(SERVICE_SYMBOLS.ICategoriesService);
 const categoriesController = new CategoryController(categoriesService);
 
@@ -149,6 +154,7 @@ app.use('/api/v1', usersController.usersRouter);
 app.use('/api/v1', invitesController.invitesRouter);
 app.use('/api/v1', authController.authRouter);
 app.use('/api/v1', expensesController.expensesRouter);
+app.use('/api/v1', incomesController.incomesRouter);
 app.use('/api/v1', categoriesController.categoriesRouter);
 app.use('/api/v1', subscriptionsController.subscriptionsRouter);
 

@@ -11,13 +11,16 @@ if (process.env.NODE_ENV === 'development') global.prisma = prisma;
 
 const CATEGORY_MODEL_NAME = 'Category';
 const EXPENSE_MODEL_NAME = 'Expense';
+const INCOME_MODEL_NAME = 'Income';
 
 // Middlewares for soft delete
 
 prisma.$use(async (params, next) => {
   params = params ?? { args: {} };
   params.args = params.args ?? {};
-  const isModelWithSoftDelete = [CATEGORY_MODEL_NAME, EXPENSE_MODEL_NAME].includes(params.model ?? '');
+  const isModelWithSoftDelete = [CATEGORY_MODEL_NAME, EXPENSE_MODEL_NAME, INCOME_MODEL_NAME].includes(
+    params.model ?? '',
+  );
 
   if (isModelWithSoftDelete) {
     if (params.action === 'findUnique' || params.action === 'findFirst') {
@@ -47,7 +50,9 @@ prisma.$use(async (params, next) => {
   params = params ?? { args: {} };
   params.args = params.args ?? {};
 
-  const isModelWithSoftDelete = [CATEGORY_MODEL_NAME, EXPENSE_MODEL_NAME].includes(params.model ?? '');
+  const isModelWithSoftDelete = [CATEGORY_MODEL_NAME, EXPENSE_MODEL_NAME, INCOME_MODEL_NAME].includes(
+    params.model ?? '',
+  );
 
   if (isModelWithSoftDelete) {
     if (params.action == 'update') {
@@ -77,7 +82,9 @@ prisma.$use(async (params, next) => {
   // Check incoming query type
   params = params ?? { args: {} };
   params.args = params.args ?? {};
-  const isModelWithSoftDelete = [CATEGORY_MODEL_NAME, EXPENSE_MODEL_NAME].includes(params.model ?? '');
+  const isModelWithSoftDelete = [CATEGORY_MODEL_NAME, EXPENSE_MODEL_NAME, INCOME_MODEL_NAME].includes(
+    params.model ?? '',
+  );
   if (isModelWithSoftDelete) {
     if (params.action == 'delete') {
       console.info(`Delete query on ${params.model}:`);
@@ -106,7 +113,9 @@ prisma.$use(async (params, next) => {
 prisma.$use(async (params, next) => {
   params = params ?? {};
   params.args = params.args ?? {};
-  const isModelWithSoftDelete = [CATEGORY_MODEL_NAME, EXPENSE_MODEL_NAME].includes(params.model ?? '');
+  const isModelWithSoftDelete = [CATEGORY_MODEL_NAME, EXPENSE_MODEL_NAME, INCOME_MODEL_NAME].includes(
+    params.model ?? '',
+  );
   if (isModelWithSoftDelete) {
     if (params.action == 'create' || params.action == 'createMany') {
       console.info(`Create query on ${params.model}:`);

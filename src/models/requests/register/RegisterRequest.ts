@@ -9,7 +9,6 @@ export const RegisterRequestSchema = z.object({
       .email('Not a valid email'),
     password: z.string().min(8),
     name: z.string().min(1),
-
     invitationToken: z.string(),
   }),
 });

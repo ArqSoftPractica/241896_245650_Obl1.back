@@ -4,15 +4,15 @@ import { injectable, inject } from 'inversify';
 import { InvalidDataError } from 'errors/InvalidDataError';
 import { requireScopedAuth, requiresApiKey } from 'middlewares/requiresAuth';
 import { validate } from 'middlewares/validate';
-import { AddCategoryRequestSchema } from 'models/requests/AddCategoryRequest';
+import { AddCategoryRequestSchema } from 'models/requests/categories/AddCategoryRequest';
 import 'reflect-metadata';
 import { ICategoriesService } from 'serviceTypes/ICategoriesService';
 import { SERVICE_SYMBOLS } from '../serviceTypes/serviceSymbols';
-import { DeleteCategoryRequestSchema } from 'models/requests/DeleteCategoryRequest';
+import { DeleteCategoryRequestSchema } from 'models/requests/categories/DeleteCategoryRequest';
 import { ResourceNotFoundError } from 'errors/ResourceNotFoundError';
-import { UpdateCategoryRequestSchema } from 'models/requests/UpdateCategoryRequestSchema';
-import { GetExpensesOfCategoryRequestSchema } from 'models/requests/GetExpensesOfCategoryRequest';
-import { GetCategoriesRequestSchema } from 'models/requests/GetCategoriesRequest';
+import { UpdateCategoryRequestSchema } from 'models/requests/categories/UpdateCategoryRequestSchema';
+import { GetExpensesOfCategoryRequestSchema } from 'models/requests/expenses/GetExpensesOfCategoryRequest';
+import { GetCategoriesRequestSchema } from 'models/requests/categories/GetCategoriesRequest';
 
 @injectable()
 class CategoryController {

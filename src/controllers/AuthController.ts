@@ -3,7 +3,7 @@ import express from 'express';
 import { Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
 import { validate } from 'middlewares/validate';
-import { LoginRequestSchema } from 'models/requests/LoginRequest';
+import { LoginRequestSchema } from 'models/requests/auth/LoginRequest';
 import 'reflect-metadata';
 import IAuthService from 'serviceTypes/IAuthService';
 import { SERVICE_SYMBOLS } from '../serviceTypes/serviceSymbols';
