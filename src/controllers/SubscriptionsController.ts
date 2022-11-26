@@ -3,7 +3,8 @@ import express, { Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
 import { AuthRequest, requireScopedAuth } from 'middlewares/requiresAuth';
 import { validate } from 'middlewares/validate';
-import { NewSubscriptionRequestSchema } from 'models/requests/NewSubscriptionRequest';
+import { DeleteSubscriptionRequestSchema } from 'models/requests/subscriptions/DeleteSubscriptionRequest';
+import { NewSubscriptionRequestSchema } from 'models/requests/subscriptions/NewSubscriptionRequest';
 import 'reflect-metadata';
 import { ISubscriptionsService } from 'serviceTypes/ISubscriptionsService';
 import { SERVICE_SYMBOLS } from '../serviceTypes/serviceSymbols';
@@ -26,6 +27,12 @@ class SubscriptionsController {
       validate(NewSubscriptionRequestSchema),
       this.createSubscription,
     );
+    this.subscriptionsRouter.delete(
+      this.path + '/:id',
+      requireScopedAuth('admin'),
+      validate(DeleteSubscriptionRequestSchema),
+      this.deleteSubscription,
+    );
   }
 
   public createSubscription = async (req: Request, res: Response) => {
@@ -36,6 +43,27 @@ class SubscriptionsController {
 
       res.status(201).json({
         message: 'Subscription created successfully',
+      });
+    } catch (err) {
+      console.error(err);
+      if (err instanceof ResourceNotFoundError) {
+        res.status(err.code).json({
+          message: err.message,
+        });
+        return;
+      }
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
+  public deleteSubscription = async (req: Request, res: Response) => {
+    try {
+      const { params, user } = req as AuthRequest;
+      const { id } = params;
+      await this._subscriptionsService.deleteSubscription(user, +id);
+
+      res.status(200).json({
+        message: 'Subscription deleted successfully',
       });
     } catch (err) {
       console.error(err);
