@@ -38,14 +38,8 @@ enum Role {
   user
 }
 
-enum SubscriptableEntity {
-  expense
-  income
-}
-
 model Subscription {
   id         Int                 @id @default(autoincrement())
-  entity     SubscriptableEntity
   categoryId Int
   createdAt  DateTime            @default(now())
   updatedAt  DateTime            @updatedAt

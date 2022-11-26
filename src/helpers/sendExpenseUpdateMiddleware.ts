@@ -11,11 +11,8 @@ export async function sendExpenseUpdateMiddleware<T>(
   type: UpdateType,
 ) {
   const updatedUser = await loadSubscriptions(user);
-  const isSubscribed = updatedUser.subscriptions.some(
-    (sub) => sub.entity === type && sub.categoryId === response.category?.id,
-  );
+  const isSubscribed = updatedUser.subscriptions.some((sub) => sub.categoryId === response.category?.id);
 
-  console.log('isSubscribed', isSubscribed);
   if (isSubscribed) {
     const emailService = myContainer.get<IEmailService>(SERVICE_SYMBOLS.IEmailService);
     await emailService.sendCategoryBalanceUpdateEmail(user.email, type, response, type);

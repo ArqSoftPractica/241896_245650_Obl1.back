@@ -1,7 +1,6 @@
 import { User } from '@prisma/client';
-import { UpdateType } from './IEmailService';
 
 export interface ISubscriptionsService {
-  createSubscription(user: User, categoryId: number, entity: UpdateType): Promise<void>;
+  createSubscription(user: User, categoryId: number): Promise<void>;
   deleteSubscription(user: User, subscriptionId: number): Promise<void>;
 }
