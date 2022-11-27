@@ -7,6 +7,28 @@ import { IncomeDTO } from 'models/responses/IncomeDTO';
 
 @injectable()
 class IncomesRepository implements IIncomesRepository {
+  public async getIncomes(familyId: number): Promise<IncomeDTO[]> {
+    const incomes = await client.income.findMany({
+      where: {
+        category: {
+          familyId,
+        },
+      },
+      select: {
+        id: true,
+        amount: true,
+        date: true,
+        description: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+    return incomes;
+  }
   public async createIncome(incomeData: Prisma.IncomeCreateInput): Promise<IncomeDTO> {
     return await client.income.create({
       data: incomeData,

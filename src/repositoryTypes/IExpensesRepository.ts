@@ -16,4 +16,5 @@ export interface IExpensesRepository {
     from: Date | undefined,
     to: Date | undefined,
   ): Promise<ExpensePerCategoryDTO[]>;
+  getExpenses(familyId: number): Promise<ExpenseDTO[]>;
 }

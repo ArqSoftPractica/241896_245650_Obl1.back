@@ -8,6 +8,7 @@ import helmet from 'helmet';
 import compression from 'compression';
 import { createTerminus } from '@godaddy/terminus';
 import log4js from 'log4js';
+import Queue from 'bull';
 import UsersController from 'controllers/UsersController';
 import { IUsersService } from 'serviceTypes/IUsersService';
 import IAuthService from 'serviceTypes/IAuthService';
@@ -28,6 +29,13 @@ import { ISubscriptionsService } from 'serviceTypes/ISubscriptionsService';
 import SubscriptionsController from 'controllers/SubscriptionsController';
 import { Consumer } from 'sqs-consumer';
 import { sqs } from 'sqs/SQS';
+import { IBalancesService } from 'serviceTypes/IBalancesService';
+import BalancesController from 'controllers/BalancesController';
+import { BalanceHistory, IEmailService } from 'serviceTypes/IEmailService';
+import { IExpensesRepository } from 'repositoryTypes/IExpensesRepository';
+import { IIncomesRepository } from 'repositoryTypes/IIncomesRepository';
+import { User } from '@prisma/client';
+import { REPOSITORY_SYMBOLS } from 'repositoryTypes/repositorySymbols';
 
 dotenv.config();
 
@@ -152,6 +160,9 @@ const categoriesController = new CategoryController(categoriesService);
 const subscriptionsService = myContainer.get<ISubscriptionsService>(SERVICE_SYMBOLS.ISubscriptionsService);
 const subscriptionsController = new SubscriptionsController(subscriptionsService);
 
+const balancesService = myContainer.get<IBalancesService>(SERVICE_SYMBOLS.IBalancesService);
+const balancesController = new BalancesController(balancesService);
+
 app.use('/api/v1', usersController.usersRouter);
 app.use('/api/v1', invitesController.invitesRouter);
 app.use('/api/v1', authController.authRouter);
@@ -159,6 +170,7 @@ app.use('/api/v1', expensesController.expensesRouter);
 app.use('/api/v1', incomesController.incomesRouter);
 app.use('/api/v1', categoriesController.categoriesRouter);
 app.use('/api/v1', subscriptionsController.subscriptionsRouter);
+app.use('/api/v1', balancesController.balancesRouter);
 
 app.use(function (req, res, next) {
   res.status(404);
@@ -216,6 +228,50 @@ consumer.on('processing_error', (err) => {
 });
 
 consumer.start();
+
+const queue = new Queue('balance', process.env.REDIS_URL ?? '');
+const calculateBalance = async (job: Queue.Job, done: any) => {
+  const incomesRepository = myContainer.get<IIncomesRepository>(REPOSITORY_SYMBOLS.IIncomesRepository);
+  const expensesRepository = myContainer.get<IExpensesRepository>(REPOSITORY_SYMBOLS.IExpensesRepository);
+  const emailsService = myContainer.get<IEmailService>(SERVICE_SYMBOLS.IEmailService);
+
+  const { user } = job.data;
+  console.log('Calculating balance for user', user.id);
+  const castedUser = user as User;
+  const expenses = (await expensesRepository.getExpenses(castedUser.familyId)).map((expense) => ({
+    ...expense,
+    amount: -expense.amount,
+  }));
+  const incomes = await incomesRepository.getIncomes(castedUser.familyId);
+
+  const transactions = [...expenses, ...incomes];
+  const sortedTransactions = transactions.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+  let balance = 0;
+  const balanceHistory: BalanceHistory[] = [];
+
+  sortedTransactions.forEach((transaction) => {
+    balance += +transaction.amount as number;
+    balanceHistory.push({
+      date: transaction.date,
+      modifiedBy: `${transaction.amount}`,
+      balance,
+    });
+  });
+
+  await emailsService.sendCurrentBalanceEmail(castedUser.email, balance, balanceHistory);
+
+  done();
+};
+
+queue.process(calculateBalance);
+queue.on('error', (err) => {
+  console.log(err.message);
+});
+
+queue.on('success', (job, result) => {
+  console.log('Job completed with result', job.id);
+});
 
 createTerminus(server, {
   healthChecks: {
