@@ -41,6 +41,7 @@ enum Role {
 model Subscription {
   id                     Int      @id @default(autoincrement())
   categoryId             Int
+  category               Category @relation(fields: [categoryId], references: [id])
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
   user                   User     @relation(fields: [userId], references: [id])
@@ -61,6 +62,7 @@ model Category {
   deleted              DateTime?
   expenses             Expense[]
   incomes              Income[]
+  subscriptions        Subscription[]
 }
 
 model Expense {
