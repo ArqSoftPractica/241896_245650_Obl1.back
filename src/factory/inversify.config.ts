@@ -28,6 +28,8 @@ import { ISubscriptionsService } from 'serviceTypes/ISubscriptionsService';
 import SubscriptionsService from 'services/SubscriptionsService';
 import ISubscriptionsRepository from 'repositoryTypes/ISubscriptionsrepository';
 import SubscriptionsRepository from 'repository/subscriptionsRepository';
+import BalancesService from 'services/BalancesService';
+import { IBalancesService } from 'serviceTypes/IBalancesService';
 
 const myContainer = new Container();
 myContainer.bind<IFamilyRepository>(REPOSITORY_SYMBOLS.IFamilyRepository).to(FamilyRepository);
@@ -45,5 +47,6 @@ myContainer.bind<IExpensesService>(SERVICE_SYMBOLS.IExpensesService).to(Expenses
 myContainer.bind<IIncomesService>(SERVICE_SYMBOLS.IIncomesService).to(IncomesService);
 myContainer.bind<ICategoriesService>(SERVICE_SYMBOLS.ICategoriesService).to(CategoriesService);
 myContainer.bind<ISubscriptionsService>(SERVICE_SYMBOLS.ISubscriptionsService).to(SubscriptionsService);
+myContainer.bind<IBalancesService>(SERVICE_SYMBOLS.IBalancesService).to(BalancesService);
 
 export default myContainer;

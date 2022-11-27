@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
 import 'reflect-metadata';
 
-import { IEmailService, UpdateType } from 'serviceTypes/IEmailService';
+import { BalanceHistory, IEmailService, UpdateType } from 'serviceTypes/IEmailService';
 import { SendMessageCommand } from '@aws-sdk/client-sqs';
 import { sqsClient } from 'helpers/sqsClient';
 
@@ -9,6 +9,8 @@ import { sqsClient } from 'helpers/sqsClient';
 class MQEmailService implements IEmailService {
   private readonly FRONTEND_URL = process.env.FRONTEND_APP_URL ?? 'http://localhost:3000';
   private readonly SQS_QUEUE_URL = process.env.SQS_QUEUE_URL ?? 'http://localhost:4566/000000000000/test';
+  private readonly SQS_BALANCE_QUEUE_URL =
+    process.env.SQS_BALANCE_QUEUE_URL ?? 'http://localhost:4566/000000000000/test';
 
   public async sendCategoryBalanceUpdateEmail(
     email: string,
@@ -46,12 +48,56 @@ class MQEmailService implements IEmailService {
     console.log('Success, message sent. MessageID:', response.MessageId);
   }
 
+  private renderBalanceTableString(balanceHistory: BalanceHistory[]): string {
+    let tableString = '';
+    balanceHistory.forEach((history) => {
+      tableString += `| ${history.date} | ${history.balance} | ${history.modifiedBy} | \n`;
+    });
+    return tableString;
+  }
+
+  public async sendCurrentBalanceEmail(
+    email: string,
+    balance: number,
+    balanceHistory: BalanceHistory[],
+  ): Promise<void> {
+    const body = `Your current balance is ${balance}\n\n| Date | Balance | Modified By | \n| --- | --- | --- | \n${this.renderBalanceTableString(
+      balanceHistory,
+    )}`;
+
+    const params = {
+      DelaySeconds: 10,
+      MessageAttributes: {
+        Receiver: {
+          DataType: 'String',
+          StringValue: email,
+        },
+        Subject: {
+          DataType: 'String',
+          StringValue: 'Current Balance',
+        },
+        Body: {
+          DataType: 'String',
+          StringValue: body,
+        },
+      },
+      MessageBody: JSON.stringify({
+        receiver: email,
+        subject: 'Current Balance',
+        body: body,
+      }),
+      QueueUrl: this.SQS_BALANCE_QUEUE_URL,
+    };
+    const data = await sqsClient.send(new SendMessageCommand(params));
+    console.log('Success, message sent. MessageID:', data.MessageId);
+  }
+
   private getInviteLink(token: string): string {
-    return `${this.FRONTEND_URL}/register?token=${token}`;
+    return `${this.FRONTEND_URL} / register ? token = ${token}`;
   }
 
   private getInviteEmailBody(link: string): string {
-    return `You have been invited to join the family. Please click on the link below to register and join the family. \n\n${link}`;
+    return `You have been invited to join the family.Please click on the link below to register and join the family.\n\n${link}`;
   }
 
   public async sendInviteEmail(email: string, token: string): Promise<void> {
