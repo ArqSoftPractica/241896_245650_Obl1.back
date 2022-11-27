@@ -4,7 +4,9 @@ import { injectable, inject } from 'inversify';
 import { AuthRequest, requireScopedAuth } from 'middlewares/requiresAuth';
 import { validate } from 'middlewares/validate';
 import { DeleteSubscriptionRequestSchema } from 'models/requests/subscriptions/DeleteSubscriptionRequest';
-import { NewSubscriptionRequestSchema } from 'models/requests/subscriptions/NewSubscriptionRequest';
+import {
+  NewSubscriptionRequestSchema,
+} from 'models/requests/subscriptions/NewSubscriptionRequest';
 import 'reflect-metadata';
 import { ISubscriptionsService } from 'serviceTypes/ISubscriptionsService';
 import { SERVICE_SYMBOLS } from '../serviceTypes/serviceSymbols';
@@ -38,8 +40,8 @@ class SubscriptionsController {
   public createSubscription = async (req: Request, res: Response) => {
     try {
       const { body, user } = req as AuthRequest;
-      const { categoryId } = body;
-      await this._subscriptionsService.createSubscription(user, categoryId);
+      const { categoryId, isSpendingSubscription } = body;
+      await this._subscriptionsService.createSubscription(user, categoryId, isSpendingSubscription);
 
       res.status(201).json({
         message: 'Subscription created successfully',

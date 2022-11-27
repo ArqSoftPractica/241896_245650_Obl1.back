@@ -31,6 +31,7 @@ class CategoriesRepository implements ICategoryRepository {
         monthlySpendingLimit: true,
         image: true,
         createdAt: true,
+        subscriptions: true,
       },
     })) as CategoryDTO;
     return categoryCreated;
@@ -50,7 +51,7 @@ class CategoriesRepository implements ICategoryRepository {
   }
 
   public async findById(categoryId: number): Promise<Category | null> {
-    return await client.category.findFirst({ where: { id: categoryId } });
+    return await client.category.findFirst({ where: { id: categoryId }, include: { subscriptions: true } });
   }
 
   public async getTop3CategoriesWithMoreExpenses(familyId: number): Promise<Top3CategoryWithMoreExpenses[]> {

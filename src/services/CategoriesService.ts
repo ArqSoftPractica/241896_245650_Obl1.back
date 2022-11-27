@@ -142,9 +142,19 @@ class CategoriesService implements ICategoriesService {
         description: true,
         monthlySpendingLimit: true,
         image: true,
+        subscriptions: true,
       },
       skip: skip ? Number(skip) : undefined,
       take: take ? Number(take) : undefined,
+    });
+
+    categories.forEach((category) => {
+      const userSubscriptions = category.subscriptions?.filter((subscription) => subscription.userId === req.user.id);
+      category.hasAlertsActivated = userSubscriptions?.some((subscription) => subscription.isSpendingSubscription);
+      category.hasNotificationsActivated = userSubscriptions?.some(
+        (subscription) => !subscription.isSpendingSubscription,
+      );
+      delete category.subscriptions;
     });
 
     return categories;

@@ -6,13 +6,18 @@ import { ResourceNotFoundError } from 'errors/ResourceNotFoundError';
 
 @injectable()
 class SubscriptionsRepository implements ISubscriptionsRepository {
-  public async createSubscription(userId: number, categoryId: number): Promise<void> {
+  public async createSubscription(userId: number, categoryId: number, isSpendingSubscription: boolean): Promise<void> {
     await client.subscription.create({
       data: {
-        categoryId,
+        isSpendingSubscription,
         user: {
           connect: {
             id: userId,
+          },
+        },
+        category: {
+          connect: {
+            id: categoryId,
           },
         },
       },

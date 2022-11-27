@@ -6,6 +6,9 @@ import emailClient from 'helpers/EmailClient';
 
 @injectable()
 class EmailService implements IEmailService {
+  sendSpendingLimitAlertEmail(email: string, category: string, limit: number, balance: number): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
   sendCurrentBalanceEmail(email: string, balance: number): Promise<void> {
     throw new Error('Method not implemented.');
   }
