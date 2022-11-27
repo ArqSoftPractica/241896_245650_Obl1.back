@@ -26,6 +26,8 @@ import { IIncomesService } from 'serviceTypes/IIncomesService';
 import IncomesController from 'controllers/IncomesController';
 import { ISubscriptionsService } from 'serviceTypes/ISubscriptionsService';
 import SubscriptionsController from 'controllers/SubscriptionsController';
+import { Consumer } from 'sqs-consumer';
+import { sqs } from 'sqs/SQS';
 
 dotenv.config();
 
@@ -167,6 +169,53 @@ app.use(function (req, res, next) {
 const server = app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}: http://localhost:${PORT}`);
 });
+
+const consumer = Consumer.create({
+  queueUrl: process.env.SQS_TRANSACTION_QUEUE_URL,
+  handleMessage: async (message) => {
+    const { Body } = message;
+    if (!Body) return;
+
+    const { transactions } = JSON.parse(Body);
+    transactions.forEach(async (transaction: any) => {
+      const { userId, amount, type, description, categoryId, familyId } = transaction;
+
+      const user = {
+        id: userId,
+        familyId,
+      };
+      const creationRequest = {
+        body: {
+          amount,
+          date: new Date().toISOString(),
+          description,
+          categoryId,
+        },
+        user: user,
+      };
+
+      if (type === 'expense') {
+        await expensesService.createExpense(creationRequest as any, user as any);
+      } else if (type === 'income') {
+        await incomesService.createIncome(creationRequest as any);
+      }
+    });
+
+    console.log('Message received', message.Body);
+  },
+  sqs: sqs,
+  pollingWaitTimeMs: 10000,
+});
+
+consumer.on('error', (err) => {
+  console.log(err.message);
+});
+
+consumer.on('processing_error', (err) => {
+  console.log(err.message);
+});
+
+consumer.start();
 
 createTerminus(server, {
   healthChecks: {

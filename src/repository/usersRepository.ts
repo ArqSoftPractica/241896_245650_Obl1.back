@@ -19,6 +19,17 @@ class UsersRepository implements IUsersRepository {
   public async createUser(userData: Prisma.UserCreateInput): Promise<User> {
     return await client.user.create({ data: userData });
   }
+
+  public async getUserById(id: number): Promise<User | null> {
+    return await client.user.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        subscriptions: true,
+      },
+    });
+  }
 }
 
 export default UsersRepository;
