@@ -23,5 +23,5 @@ export async function sendExpenseUpdateMiddleware<T>(
 
 const loadSubscriptions = async (user: User): Promise<User & { subscriptions: Subscription[] }> => {
   const usersRepository = myContainer.get<IUsersRepository>(REPOSITORY_SYMBOLS.IUsersRepository);
-  return (await usersRepository.getUserByEmail(user.email)) as User & { subscriptions: Subscription[] };
+  return (await usersRepository.getUserById(user.id)) as User & { subscriptions: Subscription[] };
 };
