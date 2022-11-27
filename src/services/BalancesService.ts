@@ -8,6 +8,7 @@ import { IExpensesRepository } from 'repositoryTypes/IExpensesRepository';
 import { IIncomesRepository } from 'repositoryTypes/IIncomesRepository';
 import { SERVICE_SYMBOLS } from 'serviceTypes/serviceSymbols';
 import { IEmailService } from 'serviceTypes/IEmailService';
+import { GetBalanceRequest } from 'models/requests/balances/GetBalanceRequest';
 
 const queue = new Queue('balance', process.env.REDIS_URL ?? '');
 
@@ -19,8 +20,10 @@ class BalancesService implements IBalancesService {
     @inject(SERVICE_SYMBOLS.IEmailService) private emailsService: IEmailService,
   ) {}
 
-  public async getBalance(user: User): Promise<void> {
-    queue.add({ user });
+  public async getBalance(user: User, request: GetBalanceRequest): Promise<void> {
+    const { query } = request;
+    const { from, to } = query;
+    queue.add({ user, from, to });
   }
 }
 

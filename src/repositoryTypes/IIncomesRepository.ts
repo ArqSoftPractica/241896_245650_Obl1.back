@@ -9,5 +9,5 @@ export interface IIncomesRepository {
   deleteIncome(incomeId: number): Promise<Income>;
   findById(id: number): Promise<Income | null>;
   isIncomeInFamily(incomeId: number, familyId: number): Promise<boolean>;
-  getIncomes(familyId: number): Promise<IncomeDTO[]>;
+  getIncomes(familyId: number, from?: string, to?: string): Promise<IncomeDTO[]>;
 }

@@ -235,14 +235,14 @@ const calculateBalance = async (job: Queue.Job, done: any) => {
   const expensesRepository = myContainer.get<IExpensesRepository>(REPOSITORY_SYMBOLS.IExpensesRepository);
   const emailsService = myContainer.get<IEmailService>(SERVICE_SYMBOLS.IEmailService);
 
-  const { user } = job.data;
+  const { user, from, to } = job.data;
   console.log('Calculating balance for user', user.id);
   const castedUser = user as User;
-  const expenses = (await expensesRepository.getExpenses(castedUser.familyId)).map((expense) => ({
+  const expenses = (await expensesRepository.getExpenses(castedUser.familyId, from, to)).map((expense) => ({
     ...expense,
     amount: -expense.amount,
   }));
-  const incomes = await incomesRepository.getIncomes(castedUser.familyId);
+  const incomes = await incomesRepository.getIncomes(castedUser.familyId, from, to);
 
   const transactions = [...expenses, ...incomes];
   const sortedTransactions = transactions.sort((a, b) => a.date.getTime() - b.date.getTime());

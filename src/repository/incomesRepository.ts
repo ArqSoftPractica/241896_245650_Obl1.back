@@ -7,11 +7,16 @@ import { IncomeDTO } from 'models/responses/IncomeDTO';
 
 @injectable()
 class IncomesRepository implements IIncomesRepository {
-  public async getIncomes(familyId: number): Promise<IncomeDTO[]> {
+  public async getIncomes(familyId: number, from?: string, to?: string): Promise<IncomeDTO[]> {
     const incomes = await client.income.findMany({
       where: {
         category: {
           familyId,
+        },
+        deleted: null,
+        date: {
+          gte: from ? new Date(from) : undefined,
+          lte: to ? new Date(to) : undefined,
         },
       },
       select: {
