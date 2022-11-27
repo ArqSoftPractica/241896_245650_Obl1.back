@@ -14,9 +14,9 @@ class SubscriptionsService implements ISubscriptionsService {
     @inject(REPOSITORY_SYMBOLS.ICategoriesRepository) private categoriesRepository: ICategoryRepository,
   ) {}
 
-  public async createSubscription(user: User, categoryId: number): Promise<void> {
+  public async createSubscription(user: User, categoryId: number, isSpendingSubscription: boolean): Promise<void> {
     await this.checkCategoryIsInFamily(+categoryId, user.familyId);
-    await this.subscriptionsRepository.createSubscription(user.id, categoryId);
+    await this.subscriptionsRepository.createSubscription(user.id, categoryId, isSpendingSubscription);
   }
 
   private async checkCategoryIsInFamily(categoryId: number, familyId: number): Promise<void> {
