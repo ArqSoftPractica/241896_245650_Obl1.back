@@ -9,11 +9,16 @@ import redisClient from 'models/redisClient';
 
 @injectable()
 class ExpensesRepository implements IExpensesRepository {
-  public async getExpenses(familyId: number): Promise<ExpenseDTO[]> {
+  public async getExpenses(familyId: number, from?: string, to?: string): Promise<ExpenseDTO[]> {
     const expenses = await client.expense.findMany({
       where: {
         category: {
           familyId,
+        },
+        deleted: null,
+        date: {
+          gte: from ? new Date(from) : undefined,
+          lte: to ? new Date(to) : undefined,
         },
       },
       select: {

@@ -2,6 +2,8 @@ import { ResourceNotFoundError } from 'errors/ResourceNotFoundError';
 import express, { Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
 import { AuthRequest, requireScopedAuth } from 'middlewares/requiresAuth';
+import { validate } from 'middlewares/validate';
+import { GetBalanceRequestSchema } from 'models/requests/balances/GetBalanceRequest';
 import 'reflect-metadata';
 import { IBalancesService } from 'serviceTypes/IBalancesService';
 import { SERVICE_SYMBOLS } from '../serviceTypes/serviceSymbols';
@@ -16,13 +18,18 @@ class BalancesController {
   }
 
   public initializeRoutes() {
-    this.balancesRouter.get(this.path, requireScopedAuth('admin', 'user'), this.getBalance);
+    this.balancesRouter.get(
+      this.path,
+      requireScopedAuth('admin', 'user'),
+      validate(GetBalanceRequestSchema),
+      this.getBalance,
+    );
   }
 
   public getBalance = async (req: Request, res: Response) => {
     try {
-      const { user } = req as AuthRequest;
-      await this.balancesService.getBalance(user);
+      const { user, query } = req as AuthRequest;
+      await this.balancesService.getBalance(user, { query });
 
       res.status(201).json({
         message: 'You will receive an email with your balance shortly',
