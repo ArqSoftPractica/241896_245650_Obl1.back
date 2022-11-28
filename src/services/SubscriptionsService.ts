@@ -2,7 +2,7 @@ import { injectable, inject } from 'inversify';
 import 'reflect-metadata';
 import { REPOSITORY_SYMBOLS } from '../repositoryTypes/repositorySymbols';
 import { User } from '@prisma/client';
-import { ISubscriptionsService } from 'serviceTypes/ISubscriptionsService';
+import { ISubscriptionsService, SubscriptionType } from 'serviceTypes/ISubscriptionsService';
 import ISubscriptionsRepository from 'repositoryTypes/ISubscriptionsrepository';
 import { ResourceNotFoundError } from 'errors/ResourceNotFoundError';
 import { ICategoryRepository } from 'repositoryTypes/ICategoriesRepository';
@@ -25,8 +25,12 @@ class SubscriptionsService implements ISubscriptionsService {
     if (isNotCategoryInFamily) throw new ResourceNotFoundError('Category not found');
   }
 
-  public async deleteSubscription(user: User, subscriptionId: number): Promise<void> {
-    await this.subscriptionsRepository.deleteSubscription(user.id, subscriptionId);
+  public async deleteSubscription(user: User, subscriptionType: SubscriptionType): Promise<void> {
+    if (subscriptionType === 'notification') {
+      await this.subscriptionsRepository.deleteNotificationSubscriptions(user.id);
+      return;
+    }
+    await this.subscriptionsRepository.deleteAlertSubscriptions(user.id);
   }
 }
 
