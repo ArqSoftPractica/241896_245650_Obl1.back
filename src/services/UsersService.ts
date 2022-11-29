@@ -6,12 +6,12 @@ import { REPOSITORY_SYMBOLS } from '../repositoryTypes/repositorySymbols';
 import { IUsersService } from 'serviceTypes/IUsersService';
 import { RegisterAdminRequest } from 'models/requests/register/RegisterAdminRequest';
 import { IUsersRepository } from 'repositoryTypes/IUsersRepository';
-import { InviteUserRequest } from 'models/requests/InviteUserRequest';
+import { InviteUserRequest } from 'models/requests/invites/InviteUserRequest';
 import { User } from '@prisma/client';
 import { SERVICE_SYMBOLS } from 'serviceTypes/serviceSymbols';
 import IAuthService from 'serviceTypes/IAuthService';
 import { IEmailService } from 'serviceTypes/IEmailService';
-import { RegisterRequest } from 'models/requests/RegisterRequest';
+import { RegisterRequest } from 'models/requests/register/RegisterRequest';
 import { InvalidDataError } from 'errors/InvalidDataError';
 
 @injectable()

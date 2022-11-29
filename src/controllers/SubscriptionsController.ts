@@ -3,6 +3,7 @@ import express, { Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
 import { AuthRequest, requireScopedAuth } from 'middlewares/requiresAuth';
 import { validate } from 'middlewares/validate';
+import { DeleteSubscriptionRequestSchema } from 'models/requests/subscriptions/DeleteSubscriptionRequest';
 import { NewSubscriptionRequestSchema } from 'models/requests/subscriptions/NewSubscriptionRequest';
 import 'reflect-metadata';
 import { ISubscriptionsService } from 'serviceTypes/ISubscriptionsService';
@@ -32,10 +33,16 @@ class SubscriptionsController {
       validate(NewSubscriptionRequestSchema),
       this.createNotificationSubscription,
     );
-    this.subscriptionsRouter.delete(this.path + '/alerts', requireScopedAuth('admin'), this.deleteAlertSubscription);
+    this.subscriptionsRouter.delete(
+      this.path + '/alerts',
+      requireScopedAuth('admin'),
+      validate(DeleteSubscriptionRequestSchema),
+      this.deleteAlertSubscription,
+    );
     this.subscriptionsRouter.delete(
       this.path + '/notifications',
       requireScopedAuth('admin'),
+      validate(DeleteSubscriptionRequestSchema),
       this.deleteNotificationSubscription,
     );
   }
@@ -84,8 +91,10 @@ class SubscriptionsController {
 
   public deleteAlertSubscription = async (req: Request, res: Response) => {
     try {
-      const { user } = req as AuthRequest;
-      await this._subscriptionsService.deleteSubscription(user, 'alert');
+      const { user, query } = req as AuthRequest;
+
+      const { categoryId } = query;
+      await this._subscriptionsService.deleteSubscription(user, 'alert', +(categoryId as string));
 
       res.status(200).json({
         message: 'Subscription deleted successfully',
@@ -104,8 +113,9 @@ class SubscriptionsController {
 
   public deleteNotificationSubscription = async (req: Request, res: Response) => {
     try {
-      const { user } = req as AuthRequest;
-      await this._subscriptionsService.deleteSubscription(user, 'notification');
+      const { user, query } = req as AuthRequest;
+      const { categoryId } = query;
+      await this._subscriptionsService.deleteSubscription(user, 'notification', +(categoryId as string));
 
       res.status(200).json({
         message: 'Subscription deleted successfully',
