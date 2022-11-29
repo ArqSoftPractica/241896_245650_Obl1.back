@@ -32,6 +32,7 @@ import { IBalancesService } from 'serviceTypes/IBalancesService';
 import BalancesController from 'controllers/BalancesController';
 import 'helpers/balanceProcessingQueue';
 import 'helpers/categorySpendingLimitControlProcessingQueue';
+import 'helpers/sagaQueueConsumer';
 
 dotenv.config();
 

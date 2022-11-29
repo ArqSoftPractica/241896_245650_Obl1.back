@@ -18,8 +18,10 @@ class FamilyRepository implements IFamilyRepository {
     return await client.family.findUniqueOrThrow({ where: { id: familyId } });
   }
 
-  public async createFamily(familyName: string): Promise<Family> {
-    return client.family.create({ data: { name: familyName } });
+  public async createFamily(input: Family): Promise<Family> {
+    return client.$queryRaw`
+    INSERT INTO Family      (name, apiKey, id, createdAt, updatedAt)    VALUES      (${input.name}, ${input.apiKey}, ${input.id}, ${input.createdAt}, ${input.updatedAt}) 
+    `;
   }
 
   public async findByFamilyName(familyName: string): Promise<Family | null> {
