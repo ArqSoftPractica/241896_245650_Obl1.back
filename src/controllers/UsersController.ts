@@ -29,6 +29,7 @@ class UsersController {
         message: 'Admin registered successfully',
       });
     } catch (err) {
+      console.error(err);
       if (err instanceof InvalidDataError) {
         res.status(err.code).json({
           message: err.message,

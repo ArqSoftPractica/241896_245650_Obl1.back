@@ -1,4 +1,5 @@
 import { Family, Role, User } from '@prisma/client';
+import axios from 'axios';
 import { Request, Response } from 'express';
 import myContainer from 'factory/inversify.config';
 import jwt from 'jsonwebtoken';
@@ -45,6 +46,7 @@ export const requireScopedAuth =
     const authorization = req.header('Authorization');
     const token = authorization ? authorization.replace('Bearer ', '') : null;
     const secret = process.env.JWT_SECRET;
+    const authUrl = process.env.AUTH_SERVICE_URL;
 
     if (!secret) {
       throw new Error('JWT_SECRET is not defined');
@@ -55,7 +57,11 @@ export const requireScopedAuth =
     }
 
     try {
-      const decoded = jwt.verify(token, secret) as any;
+      const { data: decoded } = await axios.get(`${authUrl}/verify`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const isNotAuthorizedUserType = !acceptedUserTypes.includes(decoded.user.role);
       if (isNotAuthorizedUserType) {

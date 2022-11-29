@@ -6,10 +6,10 @@ import { IFamilyRepository } from 'repositoryTypes/IFamilyRepository';
 
 const familyRepository = myContainer.get<IFamilyRepository>(REPOSITORY_SYMBOLS.IFamilyRepository);
 
-const familyNameIsUnique = async (familyName: string) => {
-  const family = await familyRepository.findByFamilyName(familyName);
-  return !family;
-};
+// const familyNameIsUnique = async (familyName: string) => {
+//   const family = await familyRepository.findByFamilyName(familyName);
+//   return !family;
+// };
 
 export const RegisterAdminRequestSchema = z.object({
   body: z.object({
@@ -20,9 +20,7 @@ export const RegisterAdminRequestSchema = z.object({
       .email('Not a valid email'),
     password: z.string().min(8, 'Password must be at least 8 characters'),
     name: z.string().min(1, 'Name is required'),
-    familyName: z.string().min(1, 'Family Name is required').refine(familyNameIsUnique, {
-      message: 'Family name is already taken',
-    }),
+    familyName: z.string().min(1, 'Family Name is required'),
   }),
 });
 

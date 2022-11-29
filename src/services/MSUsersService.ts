@@ -1,10 +1,7 @@
 import { injectable, inject } from 'inversify';
-import crypto from 'crypto';
 import 'reflect-metadata';
-import { REPOSITORY_SYMBOLS } from '../repositoryTypes/repositorySymbols';
 import { IUsersService } from 'serviceTypes/IUsersService';
 import { RegisterAdminRequest } from 'models/requests/register/RegisterAdminRequest';
-import { IUsersRepository } from 'repositoryTypes/IUsersRepository';
 import { InviteUserRequest } from 'models/requests/invites/InviteUserRequest';
 import { User } from '@prisma/client';
 import { SERVICE_SYMBOLS } from 'serviceTypes/serviceSymbols';
@@ -12,11 +9,15 @@ import IAuthService from 'serviceTypes/IAuthService';
 import { IEmailService } from 'serviceTypes/IEmailService';
 import { RegisterRequest } from 'models/requests/register/RegisterRequest';
 import { InvalidDataError } from 'errors/InvalidDataError';
+import axios, { AxiosError } from 'axios';
 
 @injectable()
-class UsersService implements IUsersService {
+class MsUsersService implements IUsersService {
+  private authServiceUrl = process.env.AUTH_SERVICE_URL;
+  private axiosInstance = axios.create({
+    baseURL: this.authServiceUrl,
+  });
   public constructor(
-    @inject(REPOSITORY_SYMBOLS.IUsersRepository) private usersRepository: IUsersRepository,
     @inject(SERVICE_SYMBOLS.IAuthService) private authService: IAuthService,
     @inject(SERVICE_SYMBOLS.IEmailService) private emailService: IEmailService,
   ) {}
@@ -26,21 +27,22 @@ class UsersService implements IUsersService {
     const { email, password, name, invitationToken } = body;
 
     const inviteToken = await this.authService.verifyInviteToken(invitationToken);
-    await this.checkUserIsNotAlreadyRegistered(email);
     const { role, familyId } = inviteToken;
 
-    const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
-
-    // await this.usersRepository.createUser({
-    //   email,
-    //   name,
-    //   password: hashedPassword,
-    //   famil
-    //   role,
-    // });
+    try {
+      await this.axiosInstance.post('/users', {
+        email,
+        password,
+        name,
+        role,
+        familyId,
+      });
+    } catch (error: any) {
+      throw new InvalidDataError((error as AxiosError).message);
+    }
   }
 
-  public async inviteUser(requestData: InviteUserRequest, user: User): Promise<void> {
+  public async inviteUser(requestData: InviteUserRequest, user: User, bearerToken: string): Promise<void> {
     const { body } = requestData;
     const { email, role } = body;
 
@@ -53,31 +55,17 @@ class UsersService implements IUsersService {
     const { body } = requestData;
     const { familyName, email, password, name } = body;
 
-    const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
-
-    await this.checkUserIsNotAlreadyRegistered(email);
-
-    // await this.usersRepository.createUser({
-    //   email,
-    //   name,
-    //   password: hashedPassword,
-    //   family: {
-    //     connectOrCreate: {
-    //       where: { name: familyName },
-    //       create: { name: familyName, apiKey: `family-costs-${uuidv4()}` },
-    //     },
-    //   },
-    //   role: 'admin',
-    // });
-  }
-
-  public async checkUserIsNotAlreadyRegistered(email: string): Promise<void> {
-    const user = await this.usersRepository.getUserByEmail(email);
-
-    if (user) {
-      throw new InvalidDataError('User already exists');
+    try {
+      await this.axiosInstance.post('/users', {
+        email,
+        password,
+        name,
+        familyName,
+      });
+    } catch (error: any) {
+      throw new InvalidDataError(((error as AxiosError)?.response?.data as any).message ?? 'Invalid data');
     }
   }
 }
 
-export default UsersService;
+export default MsUsersService;

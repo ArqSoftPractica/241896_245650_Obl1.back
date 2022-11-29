@@ -4,11 +4,9 @@ import { SERVICE_SYMBOLS } from '../serviceTypes/serviceSymbols';
 import { IFamilyRepository } from 'repositoryTypes/IFamilyRepository';
 import FamilyRepository from 'repository/familyRepository';
 import { IUsersService } from 'serviceTypes/IUsersService';
-import UsersService from 'services/UsersService';
 import UsersRepository from 'repository/usersRepository';
 import { IUsersRepository } from 'repositoryTypes/IUsersRepository';
 import IAuthService from 'serviceTypes/IAuthService';
-import AuthService from 'services/AuthService';
 import { IEmailService } from 'serviceTypes/IEmailService';
 import { IFamilyService } from 'serviceTypes/IFamilyService';
 import FamilyService from 'services/FamilyService';
@@ -30,6 +28,8 @@ import ISubscriptionsRepository from 'repositoryTypes/ISubscriptionsrepository';
 import SubscriptionsRepository from 'repository/subscriptionsRepository';
 import BalancesService from 'services/BalancesService';
 import { IBalancesService } from 'serviceTypes/IBalancesService';
+import MsUsersService from 'services/MSUsersService';
+import MsAuthService from 'services/MsAuthService';
 
 const myContainer = new Container();
 myContainer.bind<IFamilyRepository>(REPOSITORY_SYMBOLS.IFamilyRepository).to(FamilyRepository);
@@ -39,8 +39,8 @@ myContainer.bind<IExpensesRepository>(REPOSITORY_SYMBOLS.IExpensesRepository).to
 myContainer.bind<IncomesRepository>(REPOSITORY_SYMBOLS.IIncomesRepository).to(IncomesRepository);
 myContainer.bind<ISubscriptionsRepository>(REPOSITORY_SYMBOLS.ISubscriptionsRepository).to(SubscriptionsRepository);
 
-myContainer.bind<IUsersService>(SERVICE_SYMBOLS.IUsersService).to(UsersService);
-myContainer.bind<IAuthService>(SERVICE_SYMBOLS.IAuthService).to(AuthService);
+myContainer.bind<IUsersService>(SERVICE_SYMBOLS.IUsersService).to(MsUsersService);
+myContainer.bind<IAuthService>(SERVICE_SYMBOLS.IAuthService).to(MsAuthService);
 myContainer.bind<IEmailService>(SERVICE_SYMBOLS.IEmailService).to(MQEmailService);
 myContainer.bind<IFamilyService>(SERVICE_SYMBOLS.IFamilyService).to(FamilyService);
 myContainer.bind<IExpensesService>(SERVICE_SYMBOLS.IExpensesService).to(ExpensesService);
