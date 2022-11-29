@@ -35,13 +35,14 @@ export default class MsAuthService implements IAuthService {
       });
 
       return data.token;
-    } catch (_error) {
+    } catch (_error: any) {
+      console.error(_error.message);
       throw new InvalidDataError('Invalid email or password');
     }
   }
 
   public async verifyInviteToken(token: string): Promise<InvitePayload> {
-    const { data } = await this.axiosInstance.get('/tokens', {
+    const { data } = await this.axiosInstance.get('/invites', {
       params: {
         token,
       },
@@ -50,14 +51,18 @@ export default class MsAuthService implements IAuthService {
     return data;
   }
 
-  public async createInviteToken(user: User, email: string, role: Role): Promise<string> {
+  public async createInviteToken(user: User, email: string, role: Role, token: string): Promise<string> {
     const payload: InvitePayload = {
       familyId: user.familyId,
       email,
       role,
     };
 
-    const { data } = await this.axiosInstance.post('/tokens', payload);
+    const { data } = await this.axiosInstance.post('/invites', payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     return data.token;
   }

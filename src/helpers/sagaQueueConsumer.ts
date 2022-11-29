@@ -22,13 +22,19 @@ const consumer = Consumer.create({
 
     if (EventName === 'family-created') {
       const { id, name, apiKey, createdAt, updatedAt } = Payload as Family;
-      await familyRepository.createFamily({
-        id,
-        name,
-        apiKey,
-        createdAt,
-        updatedAt,
-      });
+      try {
+        await familyRepository.createFamily({
+          id,
+          name,
+          apiKey,
+          createdAt,
+          updatedAt,
+        });
+      } catch (e: any) {
+        if (e.message.includes('duplicate key')) {
+          console.log('Family already exists');
+        }
+      }
     }
 
     if (EventName === 'family-updated') {
@@ -41,19 +47,23 @@ const consumer = Consumer.create({
 
     if (EventName === 'user-created') {
       const { id, familyId, createdAt, updatedAt, email, name, role } = Payload as User;
-      await userRepository.createUser({
-        id,
-        familyId,
-        createdAt,
-        updatedAt,
-        email,
-        name,
-        password: '',
-        role,
-      });
+      try {
+        await userRepository.createUser({
+          id,
+          familyId,
+          createdAt,
+          updatedAt,
+          email,
+          name,
+          password: '',
+          role,
+        });
+      } catch (e: any) {
+        if (e.message.includes('duplicate key')) {
+          console.log('User already exists');
+        }
+      }
     }
-
-    console.log('Message received', message.Body);
   },
   sqs: sqs,
   pollingWaitTimeMs: 1000,

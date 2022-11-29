@@ -6,5 +6,5 @@ import { RegisterRequest } from 'models/requests/register/RegisterRequest';
 export interface IUsersService {
   registerAdmin(requestData: RegisterAdminRequest): Promise<void>;
   registerUser(requestData: RegisterRequest): Promise<void>;
-  inviteUser(requestData: InviteUserRequest, user: User): Promise<void>;
+  inviteUser(requestData: InviteUserRequest, user: User, bearerToken?: string): Promise<void>;
 }

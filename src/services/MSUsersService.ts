@@ -42,7 +42,7 @@ class MsUsersService implements IUsersService {
     }
   }
 
-  public async inviteUser(requestData: InviteUserRequest, user: User): Promise<void> {
+  public async inviteUser(requestData: InviteUserRequest, user: User, bearerToken: string): Promise<void> {
     const { body } = requestData;
     const { email, role } = body;
 
@@ -63,7 +63,7 @@ class MsUsersService implements IUsersService {
         familyName,
       });
     } catch (error: any) {
-      throw new InvalidDataError((error as AxiosError).message);
+      throw new InvalidDataError(((error as AxiosError)?.response?.data as any).message ?? 'Invalid data');
     }
   }
 }
