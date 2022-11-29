@@ -23,20 +23,22 @@ class SubscriptionsRepository implements ISubscriptionsRepository {
     });
   }
 
-  public async deleteNotificationSubscriptions(userId: number): Promise<void> {
+  public async deleteNotificationSubscriptions(userId: number, categoryId: number): Promise<void> {
     await client.subscription.deleteMany({
       where: {
         userId,
         isSpendingSubscription: false,
+        categoryId,
       },
     });
   }
 
-  public async deleteAlertSubscriptions(userId: number): Promise<void> {
+  public async deleteAlertSubscriptions(userId: number, categoryId: number): Promise<void> {
     await client.subscription.deleteMany({
       where: {
         userId,
         isSpendingSubscription: true,
+        categoryId,
       },
     });
   }

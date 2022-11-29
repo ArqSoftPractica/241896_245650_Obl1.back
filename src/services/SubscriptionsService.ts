@@ -25,12 +25,12 @@ class SubscriptionsService implements ISubscriptionsService {
     if (isNotCategoryInFamily) throw new ResourceNotFoundError('Category not found');
   }
 
-  public async deleteSubscription(user: User, subscriptionType: SubscriptionType): Promise<void> {
+  public async deleteSubscription(user: User, subscriptionType: SubscriptionType, categoryId: number): Promise<void> {
     if (subscriptionType === 'notification') {
-      await this.subscriptionsRepository.deleteNotificationSubscriptions(user.id);
+      await this.subscriptionsRepository.deleteNotificationSubscriptions(user.id, categoryId);
       return;
     }
-    await this.subscriptionsRepository.deleteAlertSubscriptions(user.id);
+    await this.subscriptionsRepository.deleteAlertSubscriptions(user.id, categoryId);
   }
 }
 
