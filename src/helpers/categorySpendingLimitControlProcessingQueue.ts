@@ -23,7 +23,30 @@ const calculateBalance = async (job: Queue.Job, done: any) => {
 
   console.log('Calculating balance for user', user.id);
   const castedUser = user as User;
-  const expenses = await expensesRepository.getExpenses(castedUser.familyId, from, to);
+  const expenses = await expensesRepository.getExpensesOfOneCategory({
+    where: {
+      date: {
+        gte: from ? new Date(from) : undefined,
+        lte: to ? new Date(to) : undefined,
+      },
+      category: {
+        familyId: castedUser.familyId,
+        id: +categoryId,
+      },
+    },
+    select: {
+      id: true,
+      amount: true,
+      date: true,
+      description: true,
+      category: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
   const sortedTransactions = expenses.sort((a, b) => a.date.getTime() - b.date.getTime());
 
   let balance = 0;
