@@ -203,10 +203,14 @@ const consumer = Consumer.create({
         user: user,
       };
 
-      if (type === 'expense') {
-        await expensesService.createExpense(creationRequest as any, user as any);
-      } else if (type === 'income') {
-        await incomesService.createIncome(creationRequest as any);
+      try {
+        if (type === 'expense') {
+          await expensesService.createExpense(creationRequest as any, user as any);
+        } else if (type === 'income') {
+          await incomesService.createIncome(creationRequest as any);
+        }
+      } catch (error) {
+        console.error(error);
       }
     });
 
