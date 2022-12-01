@@ -121,7 +121,7 @@ class MQEmailService implements IEmailService {
         subject: 'Current Balance',
         body: body,
       }),
-      QueueUrl: this.SQS_BALANCE_QUEUE_URL,
+      QueueUrl: this.SQS_QUEUE_URL,
     };
     const data = await sqsClient.send(new SendMessageCommand(params));
     console.log('Success, message sent. MessageID:', data.MessageId);
