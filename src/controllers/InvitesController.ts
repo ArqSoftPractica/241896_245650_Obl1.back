@@ -5,9 +5,9 @@ import { Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
 import { requireScopedAuth } from 'middlewares/requiresAuth';
 import { validate } from 'middlewares/validate';
-import { GetInviteRequestSchema } from 'models/requests/GetInviteRequest';
-import { InviteUserRequestSchema } from 'models/requests/InviteUserRequest';
-import { RegisterRequestSchema } from 'models/requests/RegisterRequest';
+import { GetInviteRequestSchema } from 'models/requests/invites/GetInviteRequest';
+import { InviteUserRequestSchema } from 'models/requests/invites/InviteUserRequest';
+import { RegisterRequestSchema } from 'models/requests/register/RegisterRequest';
 import 'reflect-metadata';
 import IAuthService from 'serviceTypes/IAuthService';
 import { IFamilyService } from 'serviceTypes/IFamilyService';
@@ -36,12 +36,14 @@ class InvitesController {
   public inviteUser = async (req: Request, res: Response) => {
     try {
       const { body, user } = req as Request & { user: User };
-      await this._usersService.inviteUser({ body }, user);
+      const bearerToken = req.headers.authorization?.split(' ')[1];
+      await this._usersService.inviteUser({ body }, user, bearerToken);
 
       res.status(201).json({
         message: `Invite sent successfully`,
       });
     } catch (err) {
+      console.error(err);
       res.status(500).json({ message: 'Internal server error' });
     }
   };
@@ -55,6 +57,7 @@ class InvitesController {
         message: `Your account has been created.`,
       });
     } catch (err) {
+      console.error(err);
       if (err instanceof InvalidDataError) {
         res.status(err.code).json({
           message: err.message,

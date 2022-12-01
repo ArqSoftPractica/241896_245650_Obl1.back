@@ -1,17 +1,16 @@
 import { injectable, inject } from 'inversify';
 import crypto from 'crypto';
 import 'reflect-metadata';
-import { v4 as uuidv4 } from 'uuid';
 import { REPOSITORY_SYMBOLS } from '../repositoryTypes/repositorySymbols';
 import { IUsersService } from 'serviceTypes/IUsersService';
-import { RegisterAdminRequest } from 'models/requests/RegisterAdminRequest';
+import { RegisterAdminRequest } from 'models/requests/register/RegisterAdminRequest';
 import { IUsersRepository } from 'repositoryTypes/IUsersRepository';
-import { InviteUserRequest } from 'models/requests/InviteUserRequest';
+import { InviteUserRequest } from 'models/requests/invites/InviteUserRequest';
 import { User } from '@prisma/client';
 import { SERVICE_SYMBOLS } from 'serviceTypes/serviceSymbols';
 import IAuthService from 'serviceTypes/IAuthService';
 import { IEmailService } from 'serviceTypes/IEmailService';
-import { RegisterRequest } from 'models/requests/RegisterRequest';
+import { RegisterRequest } from 'models/requests/register/RegisterRequest';
 import { InvalidDataError } from 'errors/InvalidDataError';
 
 @injectable()
@@ -32,15 +31,13 @@ class UsersService implements IUsersService {
 
     const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
 
-    await this.usersRepository.createUser({
-      email,
-      name,
-      password: hashedPassword,
-      family: {
-        connect: { id: familyId },
-      },
-      role,
-    });
+    // await this.usersRepository.createUser({
+    //   email,
+    //   name,
+    //   password: hashedPassword,
+    //   famil
+    //   role,
+    // });
   }
 
   public async inviteUser(requestData: InviteUserRequest, user: User): Promise<void> {
@@ -60,18 +57,18 @@ class UsersService implements IUsersService {
 
     await this.checkUserIsNotAlreadyRegistered(email);
 
-    await this.usersRepository.createUser({
-      email,
-      name,
-      password: hashedPassword,
-      family: {
-        connectOrCreate: {
-          where: { name: familyName },
-          create: { name: familyName, apiKey: `family-costs-${uuidv4()}` },
-        },
-      },
-      role: 'admin',
-    });
+    // await this.usersRepository.createUser({
+    //   email,
+    //   name,
+    //   password: hashedPassword,
+    //   family: {
+    //     connectOrCreate: {
+    //       where: { name: familyName },
+    //       create: { name: familyName, apiKey: `family-costs-${uuidv4()}` },
+    //     },
+    //   },
+    //   role: 'admin',
+    // });
   }
 
   public async checkUserIsNotAlreadyRegistered(email: string): Promise<void> {

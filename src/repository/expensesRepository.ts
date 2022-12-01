@@ -9,6 +9,34 @@ import redisClient from 'models/redisClient';
 
 @injectable()
 class ExpensesRepository implements IExpensesRepository {
+  public async getExpenses(familyId: number, from?: string, to?: string): Promise<ExpenseDTO[]> {
+    const expenses = await client.expense.findMany({
+      where: {
+        category: {
+          familyId,
+        },
+        deleted: null,
+        date: {
+          gte: from ? new Date(from) : undefined,
+          lte: to ? new Date(to) : undefined,
+        },
+      },
+      select: {
+        id: true,
+        amount: true,
+        date: true,
+        description: true,
+        categoryId: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+    return expenses;
+  }
   public async createExpense(expenseData: Prisma.ExpenseCreateInput): Promise<ExpenseDTO> {
     return await client.expense.create({
       data: expenseData,
@@ -17,6 +45,7 @@ class ExpensesRepository implements IExpensesRepository {
         amount: true,
         date: true,
         description: true,
+        categoryId: true,
         category: {
           select: {
             id: true,

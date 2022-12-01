@@ -3,7 +3,7 @@ import express from 'express';
 import { Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
 import { validate } from 'middlewares/validate';
-import { RegisterAdminRequestSchema } from 'models/requests/RegisterAdminRequest';
+import { RegisterAdminRequestSchema } from 'models/requests/register/RegisterAdminRequest';
 import 'reflect-metadata';
 import { IUsersService } from 'serviceTypes/IUsersService';
 import { SERVICE_SYMBOLS } from '../serviceTypes/serviceSymbols';
@@ -29,6 +29,7 @@ class UsersController {
         message: 'Admin registered successfully',
       });
     } catch (err) {
+      console.error(err);
       if (err instanceof InvalidDataError) {
         res.status(err.code).json({
           message: err.message,
